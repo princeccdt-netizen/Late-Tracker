@@ -1,0 +1,87 @@
+﻿git : remote: error: 
+GH013: Repository rule 
+violations found for 
+refs/heads/main.        
+At line:1 char:1
++ git push -u origin main 
+2>&1 | Out-File -FilePath 
+push_error.txt -Enc ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~
+    + CategoryInfo         
+     : NotSpecified: (rem  
+  ote: error: ...s/main.   
+         :String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+remote: 
+remote: - GITHUB PUSH 
+PROTECTION        
+remote:   ΓÇöΓÇöΓÇöΓÇöΓÇöΓÇ
+öΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇ
+öΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇ
+öΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇ
+öΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇö  
+      
+remote:     Resolve the 
+following violations 
+before pushing again       
+ 
+remote: 
+remote:     - Push cannot 
+contain secrets        
+remote: 
+remote:             
+remote:      (?) Learn how 
+to resolve a blocked push  
+      
+remote:      https://docs.g
+ithub.com/code-security/sec
+ret-scanning/working-with-s
+ecret-scanning-and-push-pro
+tection/working-with-push-p
+rotection-from-the-command-
+line#resolving-a-blocked-pu
+sh        
+remote:             
+remote:             
+remote:       ΓÇöΓÇö 
+Twilio Account String 
+Identifier ΓÇöΓÇöΓÇöΓÇöΓÇöΓ
+ÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓ
+ÇöΓÇöΓÇöΓÇö        
+remote:        locations:  
+      
+remote:          - commit: 
+757ad19902534815318ebc2c158
+531773838c23e        
+remote:            path: 
+server.ts:20        
+remote:             
+remote:        (?) To 
+push, remove secret from 
+commit(s) or follow this 
+URL to allow the secret.   
+     
+remote:        https://gith
+ub.com/princeccdt-netizen/L
+ate-Tracker/security/secret
+-scanning/unblock-secret/3A
+6CpmiIePwxEswWn2wZOF3GFh3  
+      
+remote:             
+remote: 
+remote: 
+To https://github.com/princ
+eccdt-netizen/Late-Tracker.
+git
+ ! [remote rejected] main 
+-> main (push declined due 
+to repository rule 
+violations)
+error: failed to push some 
+refs to 'https://github.com
+/princeccdt-netizen/Late-Tr
+acker.git'
