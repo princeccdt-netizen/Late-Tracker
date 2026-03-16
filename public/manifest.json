@@ -1,21 +1,16 @@
 {
-    "name": "DGVC Attendance System",
-    "short_name": "DGVC",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#f43f5e",
-    "description": "DGVC Attendance Management System",
-    "icons": [
-        {
-            "src": "/icon.svg",
-            "sizes": "192x192",
-            "type": "image/svg+xml"
-        },
-        {
-            "src": "/icon.svg",
-            "sizes": "512x512",
-            "type": "image/svg+xml"
-        }
-    ]
+  "name": "DGVC Attendance Scanner",
+  "short_name": "DGVC Attendance",
+  "description": "College Access Management and Attendance Tracking system",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
 }
