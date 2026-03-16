@@ -1,16 +1,36 @@
 
+import { GoogleGenAI, Type } from "@google/genai";
 import { Student, AnalysisResult } from "../types";
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 export const analyzeStudentLatePatterns = async (student: Student): Promise<AnalysisResult> => {
   try {
-    const response = await fetch('/api/gemini/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ student })
+    const response = await ai.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: `Analyze the following student's late tracking data and predict their punctuality behavior. 
+      Student: ${student.name}
+      Department: ${student.department}
+      Late count this month: ${student.late_count_this_month}
+      Current Score: ${student.punctuality_score}
+      
+      Provide a risk assessment (Low, Medium, High), a one-sentence prediction, and a behavioral recommendation for the lecturer.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            riskLevel: { type: Type.STRING },
+            prediction: { type: Type.STRING },
+            recommendation: { type: Type.STRING },
+          },
+          required: ["riskLevel", "prediction", "recommendation"]
+        }
+      }
     });
 
-    if (!response.ok) throw new Error('API request failed');
-    return await response.json();
+    const text = response.text || '{}';
+    return JSON.parse(text);
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
     return {
@@ -34,15 +54,21 @@ export const generateParentAlert = async (student: Student, gate: string): Promi
 
 export const generateStudentAlert = async (student: Student, gate: string): Promise<string> => {
   try {
-    const response = await fetch('/api/gemini/student-alert', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ student, gate })
+    const response = await ai.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: `Write a direct, friendly but firm WhatsApp message to the student ${student.name} about their late arrival at college.
+      Arrival Gate: ${gate}
+      Time: ${new Date().toLocaleTimeString()}
+      Remaining Punctuality Score: ${student.punctuality_score - 5}%
+      
+      Requirements:
+      1. Use direct "You" language.
+      2. Keep it punchy and clear.
+      3. Mention the score impact.
+      4. Use emojis like ⏰ and ⚠️.`,
     });
 
-    if (!response.ok) throw new Error('API request failed');
-    const data = await response.json();
-    const aiText = data.text || `Hey ${student.name}, you've been marked late at ${gate}. Your punctuality score has been updated. Don't miss the start of your lectures!`;
+    const aiText = response.text || `Hey ${student.name}, you've been marked late at ${gate}. Your punctuality score has been updated. Don't miss the start of your lectures!`;
 
     return `⏰ *COLLEGE ATTENDANCE UPDATE*\n\n${aiText}\n\n_DGVC Administration_`;
   } catch (error) {
@@ -53,15 +79,24 @@ export const generateStudentAlert = async (student: Student, gate: string): Prom
 
 export const generateLecturerHighAlert = async (student: Student, lecturerName: string): Promise<string> => {
   try {
-    const response = await fetch('/api/gemini/lecturer-alert', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ student, lecturerName })
+    const response = await ai.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: `Write a high-priority alert message to Lecturer ${lecturerName} about their student ${student.name} who has been late more than 3 times this month.
+      Student Name: ${student.name}
+      Roll No: ${student.roll_no}
+      Late Count: ${student.late_count_this_month + 1}
+      Department: ${student.department}
+      Stream: ${student.stream}
+      Section: ${student.section}
+      
+      Requirements:
+      1. Professional but urgent tone.
+      2. Highlight that this is a repeat offense (4th time or more).
+      3. Request the lecturer to take disciplinary action or counsel the student.
+      4. Use emojis like 🚨 and ⚠️.`,
     });
 
-    if (!response.ok) throw new Error('API request failed');
-    const data = await response.json();
-    const aiText = data.text || `🚨 HIGH ALERT: Student ${student.name} (${student.roll_no}) has exceeded the late entry threshold with ${student.late_count_this_month + 1} instances this month. Please intervene.`;
+    const aiText = response.text || `🚨 HIGH ALERT: Student ${student.name} (${student.roll_no}) has exceeded the late entry threshold with ${student.late_count_this_month + 1} instances this month. Please intervene.`;
 
     return `🚨 *HIGH PRIORITY LATE ALERT*\n\n${aiText}\n\n_DGVC Administration_`;
   } catch (error) {
