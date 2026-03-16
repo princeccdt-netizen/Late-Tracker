@@ -1,11 +1,11 @@
 {
-    "name": "College Late Tracker Pro",
-    "short_name": "LateTracker",
+    "name": "DGVC Attendance System",
+    "short_name": "DGVC",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#f43f5e",
-    "description": "Track college student late arrivals easily",
+    "description": "DGVC Attendance Management System",
     "icons": [
         {
             "src": "/icon.svg",

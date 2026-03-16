@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { AppRole, User } from './types';
 import FacultyView from './views/FacultyView';
+import DisciplineInchargeView from './views/DisciplineInchargeView';
 import StudentView from './views/StudentView';
 import AdminView from './views/AdminView';
 import LoginView from './views/LoginView';
 import ParentOnboardingView from './views/ParentOnboardingView';
 import { supabase } from './lib/supabase';
-import { 
-  LogOut, 
+import {
+  LogOut,
   Menu,
   X,
   Zap,
@@ -51,18 +52,20 @@ const App: React.FC = () => {
   const renderView = () => {
     // Robust role checking: Normalize to uppercase string for comparison
     const role = String(user.role).toUpperCase();
-    
+
     // Admin tiers: Teacher, HOD, Principal
     if (role.includes('ADMIN') || role === 'PRINCIPAL' || role === 'HOD') {
       return <AdminView initialUser={user} />;
     }
 
     switch (role) {
-      case 'FACULTY': 
+      case 'FACULTY':
         return <FacultyView />;
-      case 'STUDENT': 
+      case 'DISCIPLINE_INCHARGE':
+        return <DisciplineInchargeView />;
+      case 'STUDENT':
         return <StudentView currentUser={user} onUpdateUser={setUser} />;
-      default: 
+      default:
         // Fallback for any unknown administrative or authorized roles
         return <AdminView initialUser={user} />;
     }
@@ -84,7 +87,7 @@ const App: React.FC = () => {
               <Zap className="w-5 h-5 text-white" fill="white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-lg tracking-tight leading-none text-slate-900">LateTracker<span className="text-rose-500">Pro</span></span>
+              <span className="font-extrabold text-lg tracking-tight leading-none text-slate-900">DGVC<span className="text-rose-500">Attendance</span></span>
               <div className="flex items-center gap-1.5 mt-1">
                 <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                 <span className={`text-[9px] font-bold uppercase tracking-wider ${isOnline ? 'text-emerald-600' : 'text-amber-600'}`}>

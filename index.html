@@ -1,78 +1,140 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <title>College Late Tracker Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-      
-      body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-        user-select: none;
-        background-color: #fffafa;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>DGVC Attendance Scanner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      background-color: #fffafa;
+    }
+
+    @keyframes slide-up-fade {
+      from {
+        transform: translateY(40px);
+        opacity: 0;
+        filter: blur(10px);
       }
 
-      @keyframes slide-up-fade {
-        from { transform: translateY(40px); opacity: 0; filter: blur(10px); }
-        to { transform: translateY(0); opacity: 1; filter: blur(0); }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+        filter: blur(0);
       }
-      
-      @keyframes pulse-rec {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    @keyframes pulse-rec {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
       }
 
-      @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-12px); }
+      50% {
+        opacity: 0.4;
+        transform: scale(0.9);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
       }
 
-      @keyframes scanner-glow {
-        0% { transform: translateY(-200%); opacity: 0; }
-        50% { opacity: 1; }
-        100% { transform: translateY(200%); opacity: 0; }
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+    @keyframes scanner-glow {
+      0% {
+        transform: translateY(-200%);
+        opacity: 0;
       }
 
-      .animate-stagger-1 { animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s; opacity: 0; }
-      .animate-stagger-2 { animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s; opacity: 0; }
-      .animate-stagger-3 { animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.3s; opacity: 0; }
-      .animate-stagger-4 { animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s; opacity: 0; }
-      
-      .animate-float { animation: float 4s ease-in-out infinite; }
-      .animate-pulse-rec { animation: pulse-rec 1.2s ease-in-out infinite; }
-      .animate-scan-beam { animation: scanner-glow 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-
-      .glass-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 1);
-        box-shadow: 0 25px 50px -12px rgba(244, 63, 94, 0.1);
+      50% {
+        opacity: 1;
       }
 
-      .btn-primary {
-        background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-        transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-        color: white;
-        position: relative;
-        overflow: hidden;
+      100% {
+        transform: translateY(200%);
+        opacity: 0;
       }
-      .btn-primary:hover {
-        box-shadow: 0 20px 30px -10px rgba(244, 63, 94, 0.4);
-        transform: translateY(-4px) scale(1.03);
-      }
-      .btn-primary:active {
-        transform: translateY(0) scale(0.97);
-      }
+    }
 
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
+    .animate-stagger-1 {
+      animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s;
+      opacity: 0;
+    }
+
+    .animate-stagger-2 {
+      animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s;
+      opacity: 0;
+    }
+
+    .animate-stagger-3 {
+      animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.3s;
+      opacity: 0;
+    }
+
+    .animate-stagger-4 {
+      animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s;
+      opacity: 0;
+    }
+
+    .animate-float {
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .animate-pulse-rec {
+      animation: pulse-rec 1.2s ease-in-out infinite;
+    }
+
+    .animate-scan-beam {
+      animation: scanner-glow 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 1);
+      box-shadow: 0 25px 50px -12px rgba(244, 63, 94, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 20px 30px -10px rgba(244, 63, 94, 0.4);
+      transform: translateY(-4px) scale(1.03);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -87,20 +149,22 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
-<link rel="manifest" href="/manifest.json">
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+  <link rel="stylesheet" href="/index.css">
+  <link rel="manifest" href="/manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
           .then(registration => console.log('SW registered'))
           .catch(err => console.error('SW failed', err));
-    });
-  }
-</script>
+      });
+    }
+  </script>
 </head>
-  <body class="text-slate-900 overflow-x-hidden">
-    <div id="root"></div>
+
+<body class="text-slate-900 overflow-x-hidden">
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

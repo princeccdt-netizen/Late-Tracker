@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { QrCode, Download, RefreshCw, Activity, CheckCircle2, Loader2, User, Mail, Phone, BookOpen, Zap, Shield, TrendingUp, Calendar, Edit3, X, Save, MapPin, GraduationCap, Clock } from 'lucide-react';
+import { QrCode, Download, RefreshCw, Activity, CheckCircle2, Loader2, User, Mail, Phone, BookOpen, Zap, Shield, TrendingUp, Calendar, Edit3, X, Save, MapPin, GraduationCap, Clock, Scan } from 'lucide-react';
 // Fix: Import User and alias it to AuthUser as expected by the props definition
 import { User as AuthUser, Student, LateRecord } from '../types';
 import { supabase } from '../lib/supabase';
@@ -97,10 +97,10 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
     return (
       <div className="max-w-md mx-auto mt-20 p-12 text-center bg-white rounded-[3.5rem] shadow-xl border border-rose-50 animate-stagger-1">
         <div className="bg-rose-50 w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner shadow-rose-100/50"><Zap className="w-10 h-10 text-rose-500" fill="currentColor" /></div>
-        <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Access Activation</h2>
-        <p className="text-slate-500 text-sm mb-10 leading-relaxed font-medium">Activate your permanent digital ID to enable gate verification protocols.</p>
+        <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Scanner Activation</h2>
+        <p className="text-slate-500 text-sm mb-10 leading-relaxed font-medium">Activate your digital ID to enable optical scanning at college gates.</p>
         <button onClick={handleGenerateQR} disabled={isGenerating} className="w-full btn-primary py-5 rounded-3xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 active:scale-95 shadow-lg">
-          {isGenerating ? <RefreshCw className="animate-spin" /> : <><QrCode className="w-4 h-4" /> Activate Digital ID</>}
+          {isGenerating ? <RefreshCw className="animate-spin" /> : <><Scan className="w-4 h-4" /> Activate Digital Scanner</>}
         </button>
       </div>
     );
@@ -147,36 +147,36 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
         <div className="lg:col-span-2 space-y-10">
           <div className="bg-white rounded-[3.5rem] p-10 border border-rose-50 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-6">
-               <div className="flex items-center gap-3 mb-2"><User className="w-4 h-4 text-rose-400" /><h4 className="font-bold uppercase text-[10px] tracking-widest text-slate-400">Personal Data</h4></div>
-               <InfoItem label="Legal Name" value={student.name} />
-               <InfoItem label="DOB" value={student.dob} />
-               <InfoItem label="Contact" value={student.student_phone} />
+              <div className="flex items-center gap-3 mb-2"><User className="w-4 h-4 text-rose-400" /><h4 className="font-bold uppercase text-[10px] tracking-widest text-slate-400">Personal Data</h4></div>
+              <InfoItem label="Legal Name" value={student.name} />
+              <InfoItem label="DOB" value={student.dob} />
+              <InfoItem label="Contact" value={student.student_phone} />
             </div>
             <div className="space-y-6">
-               <div className="flex items-center gap-3 mb-2"><Shield className="w-4 h-4 text-rose-400" /><h4 className="font-bold uppercase text-[10px] tracking-widest text-slate-400">Institutional</h4></div>
-               <InfoItem label="Identity ID" value={student.registration_no} />
-               <InfoItem label="Class / Course" value={student.class} />
-               <InfoItem label="Academic Year" value={student.years} />
-               <InfoItem label="Academic Email" value={student.email} />
+              <div className="flex items-center gap-3 mb-2"><Shield className="w-4 h-4 text-rose-400" /><h4 className="font-bold uppercase text-[10px] tracking-widest text-slate-400">Institutional</h4></div>
+              <InfoItem label="Identity ID" value={student.registration_no} />
+              <InfoItem label="Class / Course" value={student.class} />
+              <InfoItem label="Academic Year" value={student.years} />
+              <InfoItem label="Academic Email" value={student.email} />
             </div>
           </div>
 
           <div className="bg-white rounded-[3.5rem] p-10 border border-rose-50 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-               <div className="flex items-center gap-3"><TrendingUp className="w-5 h-5 text-rose-500" /><h3 className="text-lg font-black tracking-tight text-slate-900">Attendance Analytics</h3></div>
+              <div className="flex items-center gap-3"><TrendingUp className="w-5 h-5 text-rose-500" /><h3 className="text-lg font-black tracking-tight text-slate-900">Attendance Analytics</h3></div>
             </div>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="5 5" vertical={false} stroke="#fff1f2" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#f43f5e', fontSize: 9, fontWeight: 700}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#f43f5e', fontSize: 9, fontWeight: 700}} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#f43f5e', fontSize: 9, fontWeight: 700 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#f43f5e', fontSize: 9, fontWeight: 700 }} />
                   <Tooltip />
                   <Area type="monotone" dataKey="late" stroke="#f43f5e" strokeWidth={4} fillOpacity={1} fill="url(#colorArea)" />
                 </AreaChart>
@@ -190,7 +190,7 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
               <Clock className="w-5 h-5 text-rose-500" />
               <h3 className="text-lg font-black tracking-tight text-slate-900">Late Entry History</h3>
             </div>
-            
+
             {lateHistory.length > 0 ? (
               <div className="bg-rose-50/30 rounded-3xl border border-rose-100 overflow-hidden">
                 <table className="w-full text-left border-collapse">
@@ -213,9 +213,8 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
                           {new Date(log.timestamp).toLocaleString()}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${
-                            log.status === 'confirmed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
-                          }`}>
+                          <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${log.status === 'confirmed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
+                            }`}>
                             {log.status}
                           </span>
                         </td>
@@ -261,10 +260,10 @@ const LightEditInput = ({ label, name, defaultValue, icon }: any) => (
     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{label}</label>
     <div className="relative group">
       <div className="absolute left-5 top-1/2 -translate-y-1/2 text-rose-300 group-focus-within:text-rose-500 transition-colors">{icon}</div>
-      <input 
-        name={name} 
-        defaultValue={defaultValue} 
-        className="w-full pl-14 pr-6 py-4 bg-rose-50/20 border border-rose-100 rounded-2xl text-sm text-slate-900 outline-none font-bold focus:ring-4 ring-rose-50 transition-all" 
+      <input
+        name={name}
+        defaultValue={defaultValue}
+        className="w-full pl-14 pr-6 py-4 bg-rose-50/20 border border-rose-100 rounded-2xl text-sm text-slate-900 outline-none font-bold focus:ring-4 ring-rose-50 transition-all"
       />
     </div>
   </div>

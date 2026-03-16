@@ -2,6 +2,7 @@
 export enum AppRole {
   FACULTY = 'FACULTY',
   STUDENT = 'STUDENT',
+  DISCIPLINE_INCHARGE = 'DISCIPLINE_INCHARGE',
   ADMIN_TEACHER = 'ADMIN_TEACHER',
   ADMIN_HOD = 'ADMIN_HOD',
   ADMIN_PRINCIPAL = 'ADMIN_PRINCIPAL'
@@ -21,30 +22,30 @@ export interface Student {
   roll_no: string;
   registration_no: string;
   name: string;
-  
+
   // Personal Details
   dob: string;
   sex: string;
   address: string;
   photo_url: string;
-  
+
   // Academic Info
   department: string;
   stream: string;
   section: string;
   shift: string;
   years?: string; // Academic Year/Batch
-  
+
   // Identity
   aadhar_no: string;
   has_pan: boolean;
   pan_no?: string;
-  
+
   // Contact Info
   email: string;
   student_phone: string;
   alt_phone?: string;
-  
+
   // Family Info
   father_name: string;
   father_phone: string;
