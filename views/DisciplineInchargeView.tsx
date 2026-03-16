@@ -171,18 +171,18 @@ const DisciplineInchargeView: React.FC = () => {
     return (
         <div className="min-h-screen bg-slate-50 pb-24">
             {/* Header */}
-            <div className="bg-white px-6 py-6 border-b border-rose-100 sticky top-0 z-40">
+            <div className="bg-white/95 px-6 py-6 border-b border-purple-100 sticky top-0 z-40 backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="bg-rose-500 p-2 rounded-xl text-white">
+                        <div className="bg-purple-600 p-2.5 rounded-2xl text-white shadow-lg shadow-purple-100">
                             <Scan className="w-5 h-5" />
                         </div>
-                        <h1 className="font-black text-lg tracking-tight">Gate Scanner</h1>
+                        <h1 className="font-black text-xl tracking-tighter">Secure <span className="text-purple-600">Gate</span></h1>
                     </div>
                     <select
                         value={activeGate}
                         onChange={(e) => setActiveGate(e.target.value)}
-                        className="bg-rose-50 text-rose-600 text-[10px] font-black uppercase px-4 py-2 rounded-full border-none outline-none ring-1 ring-rose-100"
+                        className="bg-purple-50/50 text-purple-600 text-[9px] font-black uppercase px-5 py-2.5 rounded-full border border-purple-100 outline-none hover:bg-purple-100 transition-all cursor-pointer"
                     >
                         {GATES.map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
@@ -198,23 +198,23 @@ const DisciplineInchargeView: React.FC = () => {
                     {isScanning ? (
                         <>
                             <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />
-                            <div className="absolute inset-0 border-[12px] border-black/40 pointer-events-none">
-                                <div className="w-full h-full border-2 border-rose-500/50 rounded-none relative">
-                                    <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-rose-500 rounded-none" />
-                                    <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-rose-50 rounded-none" />
-                                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-rose-50 rounded-none" />
-                                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-rose-50 rounded-none" />
-                                    <div className="absolute top-0 left-0 w-full h-0.5 bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,1)] animate-scan-beam" />
+                            <div className="absolute inset-0 border-[16px] border-slate-950/60 pointer-events-none">
+                                <div className="w-full h-full border-[1.5px] border-purple-400/30 rounded-none relative">
+                                    <div className="absolute top-0 left-0 w-12 h-12 border-t-[3px] border-l-[3px] border-purple-500 rounded-none" />
+                                    <div className="absolute top-0 right-0 w-12 h-12 border-t-[3px] border-r-[3px] border-purple-500 rounded-none" />
+                                    <div className="absolute bottom-0 left-0 w-12 h-12 border-b-[3px] border-l-[3px] border-purple-500 rounded-none" />
+                                    <div className="absolute bottom-0 right-0 w-12 h-12 border-b-[3px] border-r-[3px] border-purple-500 rounded-none" />
+                                    <div className="absolute top-0 left-0 w-full h-0.5 bg-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.8)] animate-scan-beam" />
                                 </div>
                             </div>
                         </>
                     ) : !scannedStudent && (
                         <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-slate-900">
-                            <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center mb-6">
-                                {error ? <AlertCircle className="w-10 h-10 text-rose-400" /> : <Loader2 className="w-10 h-10 text-rose-400 animate-spin" />}
+                            <div className="w-20 h-20 bg-white/5 backdrop-blur-xl rounded-[2.5rem] flex items-center justify-center mb-6 border border-white/10 shadow-2xl">
+                                {error ? <AlertCircle className="w-8 h-8 text-rose-500" /> : <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />}
                             </div>
-                            <h2 className="text-white font-black text-xl mb-2">{error || "Preparing Lens..."}</h2>
-                            <button onClick={() => setIsScanning(true)} className="mt-4 px-8 py-4 bg-rose-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest">Retry Camera</button>
+                            <h2 className="text-white font-black text-xl mb-4 tracking-tight">{error || "Calibrating Security Lens..."}</h2>
+                            <button onClick={() => setIsScanning(true)} className="px-10 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] shadow-xl shadow-purple-900/50 transition-all">Retry Authorization</button>
                         </div>
                     )}
 
