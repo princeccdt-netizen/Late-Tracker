@@ -1,21 +1,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
-    Camera,
-    MapPin,
-    X,
-    Check,
-    RefreshCw,
-    Scan,
-    AlertCircle,
-    StopCircle,
-    PlayCircle,
-    Loader2,
-    Search,
-    ArrowRight,
-    Send,
-    Upload,
-    MessageSquare
+    Camera, MapPin, X, Check, RefreshCw, Scan, AlertCircle, StopCircle, PlayCircle, Loader2, Search, ArrowRight,
+    Send, Upload, MessageSquare, ShieldCheck
 } from 'lucide-react';
 import { GATES, MOCK_STUDENTS } from '../constants';
 import { Student } from '../types';
@@ -48,23 +35,16 @@ const DisciplineInchargeView: React.FC = () => {
     const startCamera = async () => {
         setError(null);
         try {
-            console.log("Requesting Mobile Camera...");
-            const constraints = {
-                video: { facingMode: 'environment' },
-                audio: false
-            };
+            const constraints = { video: { facingMode: 'environment' }, audio: false };
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            console.log("Camera stream obtained.");
             streamRef.current = stream;
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 await videoRef.current.play();
-                console.log("Video playing, starting scan loop.");
                 requestRef.current = requestAnimationFrame(scanTick);
             }
         } catch (err: any) {
-            console.error("Camera Error:", err);
-            setError(`Camera Error: ${err.message || 'Unknown'}. Please ensure permissions are granted.`);
+            setError(`Error: ${err.message || 'Check permissions'}`);
             setIsScanning(false);
         }
     };
@@ -97,24 +77,19 @@ const DisciplineInchargeView: React.FC = () => {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = (event) => {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
+                canvas.width = img.width; canvas.height = img.height;
                 const ctx = canvas.getContext('2d');
                 if (ctx) {
                     ctx.drawImage(img, 0, 0);
                     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const code = jsQR(imageData.data, imageData.width, imageData.height);
-                    if (code && code.data) {
-                        handleStudentLookup(code.data);
-                    } else {
-                        alert("No QR code found in the image. Please try a clearer photo.");
-                    }
+                    if (code && code.data) handleStudentLookup(code.data);
+                    else alert("No QR found.");
                 }
             };
             img.src = event.target?.result as string;
@@ -129,21 +104,13 @@ const DisciplineInchargeView: React.FC = () => {
         try {
             const data = await studentService.getStudentByRoll(rollNo.trim());
             let found = data as Student || MOCK_STUDENTS.find(s => s.roll_no === rollNo.trim());
-
             if (found) {
                 setScannedStudent(found);
                 const alertMsg = await generateParentAlert(found, activeGate);
                 setParentAlert(alertMsg);
-            } else {
-                alert("Student not found.");
-                setIsScanning(true);
-            }
-        } catch (err) {
-            alert("Error fetching student details.");
-            setIsScanning(true);
-        } finally {
-            setIsDraftingAlert(false);
-        }
+            } else { alert("Not found."); setIsScanning(true); }
+        } catch (err) { alert("Registry error."); setIsScanning(true); }
+        finally { setIsDraftingAlert(false); }
     };
 
     const handleConfirm = async () => {
@@ -151,155 +118,100 @@ const DisciplineInchargeView: React.FC = () => {
         setNotifying(true);
         try {
             await studentService.incrementLateCount(scannedStudent.roll_no, scannedStudent.late_count_this_month);
-            const success = await whatsappService.sendWhatsApp(scannedStudent.father_phone, parentAlert);
-            alert(success ? "Late entry logged & Parent notified! ✅" : "Logged, but WhatsApp failed. ⚠️");
+            await whatsappService.sendWhatsApp(scannedStudent.father_phone, parentAlert);
+            alert("Confirmed!");
             resetScanner();
-        } catch (err) {
-            alert("Confirmation failed.");
-        } finally {
-            setNotifying(false);
-        }
+        } catch (err) { alert("Failed."); }
+        finally { setNotifying(false); }
     };
 
     const resetScanner = () => {
         setScannedStudent(null);
         setParentAlert('');
-        setManualRoll('');
         setIsScanning(true);
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 pb-24">
-            {/* Header */}
-            <div className="bg-white/95 px-6 py-6 border-b border-purple-100 sticky top-0 z-40 backdrop-blur-xl">
-                <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-purple-600 p-2.5 rounded-2xl text-white shadow-lg shadow-purple-100">
-                            <Scan className="w-5 h-5" />
-                        </div>
-                        <h1 className="font-black text-xl tracking-tighter">Secure <span className="text-purple-600">Gate</span></h1>
-                    </div>
-                    <select
-                        value={activeGate}
-                        onChange={(e) => setActiveGate(e.target.value)}
-                        className="bg-purple-50/50 text-purple-600 text-[9px] font-black uppercase px-5 py-2.5 rounded-full border border-purple-100 outline-none hover:bg-purple-100 transition-all cursor-pointer"
-                    >
-                        {GATES.map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
+        <div className="student-container" style={{maxWidth:'600px'}}>
+            {/* Simple Header */}
+            <div className="card-white p-6 between mb-6">
+                <div className="items-center gap-3">
+                    <div className="btn-icon purple" style={{padding:'0.5rem'}}><ShieldCheck /></div>
+                    <h1 className="font-black text-xl tracking-tighter">Security <span className="text-purple-600">Gate</span></h1>
                 </div>
+                <select 
+                    value={activeGate} 
+                    onChange={e => setActiveGate(e.target.value)}
+                    className="tab-btn active"
+                    style={{fontSize:'0.6rem', padding:'0.5rem 1rem'}}
+                >
+                    {GATES.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
             </div>
 
-            <main className="p-4 space-y-6">
-                {/* Scanner Feed Container */}
-                <div className="bg-black aspect-square rounded-[3rem] overflow-hidden relative shadow-2xl border-4 border-white">
+            <main className="flex-col gap-6">
+                <div className="scanner-section" style={{aspectRatio:'1/1', border:'8px solid white', boxShadow:'var(--shadow-lg)'}}>
                     <canvas ref={canvasRef} className="hidden" />
-
-                    {/* Viewfinder logic */}
                     {isScanning ? (
-                        <>
+                        <div className="w-full h-full relative">
                             <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />
-                            <div className="absolute inset-0 border-[16px] border-slate-950/60 pointer-events-none">
-                                <div className="w-full h-full border-[1.5px] border-purple-400/30 rounded-none relative">
-                                    <div className="absolute top-0 left-0 w-12 h-12 border-t-[3px] border-l-[3px] border-purple-500 rounded-none" />
-                                    <div className="absolute top-0 right-0 w-12 h-12 border-t-[3px] border-r-[3px] border-purple-500 rounded-none" />
-                                    <div className="absolute bottom-0 left-0 w-12 h-12 border-b-[3px] border-l-[3px] border-purple-500 rounded-none" />
-                                    <div className="absolute bottom-0 right-0 w-12 h-12 border-b-[3px] border-r-[3px] border-purple-500 rounded-none" />
-                                    <div className="absolute top-0 left-0 w-full h-0.5 bg-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.8)] animate-scan-beam" />
-                                </div>
+                            <div className="scanner-viewfinder-premium">
+                                <div className="scanner-beam"></div>
                             </div>
-                        </>
+                        </div>
                     ) : !scannedStudent && (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-slate-900">
-                            <div className="w-20 h-20 bg-white/5 backdrop-blur-xl rounded-[2.5rem] flex items-center justify-center mb-6 border border-white/10 shadow-2xl">
-                                {error ? <AlertCircle className="w-8 h-8 text-rose-500" /> : <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />}
+                        <div className="center h-full flex-col text-white p-10 text-center gap-6">
+                            <div className="btn-premium" style={{background:'white', color:'var(--purple-600)', width:'60px', height:'80px', borderRadius:'2rem'}}>
+                                {error ? <AlertCircle size={40} /> : <Loader2 size={40} className="animate-spin" />}
                             </div>
-                            <h2 className="text-white font-black text-xl mb-4 tracking-tight">{error || "Calibrating Security Lens..."}</h2>
-                            <button onClick={() => setIsScanning(true)} className="px-10 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] shadow-xl shadow-purple-900/50 transition-all">Retry Authorization</button>
+                            <h2 className="text-2xl font-black">{error || "Calibrating..."}</h2>
+                            <button onClick={() => setIsScanning(true)} className="btn-premium w-full">Retry</button>
                         </div>
                     )}
 
-                    {/* Scanned Card Overlay */}
                     {scannedStudent && (
-                        <div className="absolute inset-0 bg-white p-8 mb-4 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-300 z-50">
-                            <img src={scannedStudent.photo_url} className="w-40 h-40 rounded-[3rem] object-cover ring-[12px] ring-rose-50 mb-8 shadow-2xl" alt="" />
-                            <h3 className="text-4xl font-black text-slate-950 leading-tight tracking-tighter">{scannedStudent.name}</h3>
-                            <div className="mt-4 px-6 py-2 bg-rose-600 text-white rounded-full inline-block">
-                                <p className="font-black text-xl tracking-widest">{scannedStudent.roll_no}</p>
+                        <div className="modal-content animate-fade" style={{position:'absolute', inset:0, borderRadius:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', zIndex:50}}>
+                            <img src={scannedStudent.photo_url} className="w-40 h-40 rounded-3xl object-cover ring-white shadow-lg mb-8" alt="" />
+                            <h3 className="text-4xl font-black text-slate-800 tracking-tighter">{scannedStudent.name}</h3>
+                            <div className="badge" style={{background:'var(--rose-500)', color:'white', marginTop:'1rem'}}>{scannedStudent.roll_no}</div>
+
+                            <div className="mt-8 p-6 bg-slate-950 text-emerald-400 text-xs font-bold leading-relaxed italic border border-emerald-500/20 rounded-2xl w-full text-left">
+                                <div className="text-[10px] uppercase tracking-widest mb-2 text-emerald-500/60 font-black">AI Dossier</div>
+                                {isDraftingAlert ? "Drafting..." : parentAlert}
                             </div>
 
-                            <div className="mt-8 w-full p-8 bg-slate-950 rounded-[2.5rem] border-2 border-emerald-500/30 text-left text-sm font-bold text-emerald-400 leading-relaxed italic shadow-2xl">
-                                <div className="text-[10px] uppercase tracking-[0.2em] mb-3 text-emerald-500/60 font-black flex items-center gap-2">
-                                    <MessageSquare className="w-3 h-3" /> Digital Dossier / AI Parent Alert
-                                </div>
-                                {isDraftingAlert ? (
-                                    <div className="flex items-center gap-3">
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        <span>Drafting high-priority alert...</span>
-                                    </div>
-                                ) : parentAlert}
-                            </div>
-
-                            <div className="mt-10 flex flex-col gap-4 w-full">
-                                <button
-                                    onClick={handleConfirm}
-                                    disabled={notifying || isDraftingAlert}
-                                    className="w-full py-6 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase text-sm tracking-widest rounded-3xl shadow-2xl shadow-emerald-200 flex items-center justify-center gap-4 active:scale-95 transition-all"
-                                >
-                                    {notifying ? <Loader2 className="w-6 h-6 animate-spin" /> : <><Send className="w-6 h-6" /> Confirm & Notify Parent</>}
+                            <div className="mt-10 flex-col gap-4 w-full">
+                                <button onClick={handleConfirm} disabled={notifying} className="btn-premium w-full" style={{background:'#10b981'}}>
+                                    {notifying ? <Loader2 className="animate-spin" /> : <><Send size={18} /> Confirm Entry</>}
                                 </button>
-                                <button onClick={resetScanner} className="w-full py-5 bg-slate-100 text-slate-500 font-black uppercase text-[11px] tracking-widest rounded-2xl hover:bg-rose-50 hover:text-rose-500 transition-all">Discard & Reset</button>
+                                <button onClick={resetScanner} className="btn-secondary w-full" style={{padding:'1.25rem'}}>Reset</button>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Pause Button - Moved below square as requested */}
                 {isScanning && !scannedStudent && (
-                    <div className="flex justify-center -mt-8 relative z-50">
-                        <button
-                            onClick={() => setIsScanning(false)}
-                            className="bg-rose-500 text-white px-10 py-5 rounded-full font-black uppercase text-[11px] tracking-widest shadow-2xl flex items-center gap-3 active:scale-95 transition-all animate-in slide-in-from-top-4"
-                        >
-                            <StopCircle className="w-5 h-5" /> Pause Scanner
-                        </button>
-                    </div>
+                   <button onClick={() => setIsScanning(false)} className="btn-premium" style={{background:'var(--rose-500)', margin:'-2rem auto 0', zIndex:100}}>
+                      <StopCircle size={18} /> Pause
+                   </button>
                 )}
 
-                {/* Action Bar */}
                 {!scannedStudent && (
-                    <div className="grid grid-cols-2 gap-4">
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="bg-white p-6 rounded-[2.5rem] border border-rose-100 shadow-sm flex flex-col items-center gap-3 active:scale-95 transition-all"
-                        >
-                            <div className="bg-rose-50 p-3 rounded-2xl text-rose-500">
-                                <Upload className="w-6 h-6" />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Upload Photo</span>
+                    <div className="lg-grid gap-4" style={{gridTemplateColumns:'1fr 1fr'}}>
+                        <button onClick={() => fileInputRef.current?.click()} className="card-white p-6 center flex-col gap-2 hover:border-purple-300">
+                            <Upload className="text-purple-600" />
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-400">Take Photo</span>
                             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
                         </button>
-
-                        <button
-                            onClick={() => {
-                                const roll = prompt("Enter Student Roll Number:");
-                                if (roll) handleStudentLookup(roll);
-                            }}
-                            className="bg-white p-6 rounded-[2.5rem] border border-rose-100 shadow-sm flex flex-col items-center gap-3 active:scale-95 transition-all"
+                        <button 
+                            onClick={() => { const roll = prompt("Roll No:"); if(roll) handleStudentLookup(roll); }}
+                            className="card-white p-6 center flex-col gap-2 hover:border-purple-300"
                         >
-                            <div className="bg-rose-50 p-3 rounded-2xl text-rose-500">
-                                <Search className="w-6 h-6" />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Manual Entry</span>
+                            <Search className="text-purple-600" />
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-400">Manual Entry</span>
                         </button>
                     </div>
                 )}
-
-                {/* Info Card */}
-                <div className="bg-indigo-600 p-8 rounded-[3rem] text-white shadow-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
-                    <h3 className="text-xl font-black tracking-tight mb-2">Gate Intelligence</h3>
-                    <p className="text-indigo-100 text-[11px] font-medium leading-relaxed">System automatically detects QR codes. If camera access is slow, use the 'Upload' button to take a steady picture of the ID.</p>
-                </div>
             </main>
         </div>
     );

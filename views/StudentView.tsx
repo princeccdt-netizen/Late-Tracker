@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { QrCode, Download, RefreshCw, Activity, CheckCircle2, Loader2, User, Mail, Phone, BookOpen, Zap, Shield, TrendingUp, Calendar, Edit3, X, Save, MapPin, GraduationCap, Clock, Scan } from 'lucide-react';
-// Fix: Import User and alias it to AuthUser as expected by the props definition
+import { QrCode, Download, RefreshCw, Activity, CheckCircle2, Loader2, User, Mail, Phone, BookOpen, Zap, Shield, TrendingUp, Calendar, Edit3, X, Save, MapPin, Clock, Scan } from 'lucide-react';
 import { User as AuthUser, Student, LateRecord } from '../types';
 import { supabase } from '../lib/supabase';
 import { studentService } from '../services/studentService';
@@ -91,81 +90,88 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
     } finally { setDownloading(false); }
   };
 
-  if (loading) return <div className="min-h-[60vh] flex flex-col items-center justify-center"><Loader2 className="animate-spin text-purple-600 mb-6 w-12 h-12 opacity-40" /><p className="font-black text-[10px] uppercase tracking-[0.4em] text-slate-400">Verifying Digital Identity</p></div>;
+  if (loading) return <div className="min-h-screen center flex-col gap-6"><Loader2 className="animate-spin text-purple-600 w-12 h-12 opacity-40" /><p className="font-black text-xs uppercase tracking-widest text-slate-400">Verifying Digital Identity</p></div>;
 
   if (!student?.has_generated_qr) {
     return (
-      <div className="max-w-md mx-auto mt-20 p-12 text-center bg-white rounded-[3.5rem] shadow-xl border border-purple-50 animate-stagger-1">
-        <div className="bg-purple-50 w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner shadow-purple-100/50"><Zap className="w-10 h-10 text-purple-600" fill="currentColor" /></div>
-        <h2 className="text-3xl font-black text-slate-900 mb-3 tracking-tighter">Activation Required</h2>
-        <p className="text-slate-500 text-sm mb-10 leading-relaxed font-medium">Provision your digital identity to enable secure scanning at institution gateways.</p>
-        <button onClick={handleGenerateQR} disabled={isGenerating} className="w-full bg-purple-600 hover:bg-purple-500 text-white py-5 rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-4 transition-all shadow-xl shadow-purple-900/40">
-          {isGenerating ? <RefreshCw className="animate-spin" /> : <><Scan className="w-4 h-4" /> Initialize Scanner</>}
-        </button>
+      <div className="center min-h-screen p-4">
+        <div className="card-white max-w-md p-10 text-center animate-fade">
+          <div className="bg-purple-50 w-24 h-24 rounded-3xl center mx-auto mb-8 shadow-md">
+            <Zap className="w-10 h-10 text-purple-600" />
+          </div>
+          <h2 className="text-3xl font-black text-slate-800 mb-3 tracking-tighter">Activation Required</h2>
+          <p className="text-slate-500 text-sm mb-10 leading-relaxed font-bold">Provision your digital identity to enable secure scanning at institution gateways.</p>
+          <button onClick={handleGenerateQR} disabled={isGenerating} className="btn-premium w-full">
+            {isGenerating ? <RefreshCw className="animate-spin" /> : <><Scan className="w-4 h-4" /> Initialize Scanner</>}
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 lg:p-12 space-y-10 pb-32">
+    <div className="student-container">
       {/* Profile Header */}
-      <div className="bg-white rounded-[3.5rem] p-8 shadow-sm border border-purple-50 flex flex-col md:flex-row gap-8 items-center animate-stagger-1">
-        <div className="relative group">
-          <img src={student?.photo_url} className="w-32 h-32 rounded-[2.5rem] object-cover ring-8 ring-purple-50/50 shadow-xl" alt="" />
-          <div className="absolute -bottom-1 -right-1 bg-emerald-500 p-2 rounded-xl text-white shadow-lg border-2 border-white"><CheckCircle2 className="w-4 h-4" /></div>
+      <div className="profile-header">
+        <div className="relative">
+          <img src={student?.photo_url} className="w-32 h-32 rounded-3xl object-cover ring-white shadow-lg" alt="" />
+          <div className="absolute inset-0 center rounded-3xl" style={{ border: '4px solid var(--purple-50)', pointerEvents: 'none' }}></div>
+          <div className="absolute -bottom-1 -right-1 bg-emerald-500 p-2 rounded-xl text-white shadow-md border-2 border-white"><CheckCircle2 className="w-4 h-4" /></div>
         </div>
         <div className="flex-1 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-4">
-            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{student?.name}</h2>
-            <button onClick={() => setShowEditModal(true)} className="p-2 text-purple-300 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all"><Edit3 className="w-5 h-5" /></button>
+          <div className="center md:justify-start gap-4">
+            <h2 className="text-4xl font-black text-slate-800 tracking-tighter">{student?.name}</h2>
+            <button onClick={() => setShowEditModal(true)} className="btn-icon purple">
+              <Edit3 className="w-5 h-5" />
+            </button>
           </div>
-          <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
-            <span className="px-4 py-1.5 bg-slate-900 text-white rounded-full text-[10px] font-bold uppercase tracking-widest">{student?.roll_no}</span>
-            <span className="px-4 py-1.5 bg-purple-50 text-purple-600 border border-purple-100 rounded-full text-[10px] font-bold uppercase tracking-widest">{student?.department} • {student?.years}</span>
+          <div className="flex flex-wrap gap-3 mt-4 center md:justify-start">
+            <span className="badge badge-purple" style={{background:'var(--slate-900)', color:'white'}}>{student?.roll_no}</span>
+            <span className="badge badge-purple">{student?.department} • {student?.years}</span>
           </div>
         </div>
-        <div className="bg-purple-50/50 border border-purple-100 p-8 rounded-[3rem] text-center min-w-[200px] shadow-inner">
+        <div className="punctuality-box">
           <Activity className="w-6 h-6 text-purple-600 mx-auto mb-2 opacity-60" />
-          <p className="text-5xl font-black tracking-tighter text-slate-900">{student?.punctuality_score}%</p>
-          <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest mt-2">Punctuality Rating</p>
+          <p className="text-5xl font-black tracking-tighter text-slate-800">{student?.punctuality_score}%</p>
+          <p className="text-xs font-bold uppercase text-slate-400 tracking-widest mt-2">Punctuality</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="space-y-10">
-          <div className="bg-white rounded-[3.5rem] p-10 border border-purple-50 flex flex-col items-center shadow-sm">
-            <div className="p-6 bg-purple-50 rounded-[2.5rem] border border-purple-100 mb-8 group cursor-pointer hover:bg-white transition-all shadow-inner">
-              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${student.roll_no}`} className="w-40 h-40 mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity" alt="QR" />
+      <div className="lg-grid gap-10" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="flex-col gap-10">
+          <div className="card-white p-10 center flex-col">
+            <div className="qr-box mb-8">
+              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${student.roll_no}`} className="w-40 h-40" alt="QR" />
             </div>
-            <button onClick={handleDownloadQR} disabled={downloading} className="w-full bg-slate-900 text-white py-5 rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-black active:scale-95 transition-all flex items-center justify-center gap-4 shadow-xl">
+            <button onClick={handleDownloadQR} disabled={downloading} className="btn-premium w-full" style={{background:'var(--slate-950)'}}>
               {downloading ? <RefreshCw className="animate-spin" /> : <Download className="w-3.5 h-3.5 text-purple-400" />}
-              Save Access Token
+              Save Token
             </button>
           </div>
         </div>
 
-        <div className="lg:col-span-2 space-y-10">
-          <div className="bg-white rounded-[3.5rem] p-10 border border-purple-50 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-2"><User className="w-4 h-4 text-purple-400" /><h4 className="font-black uppercase text-[10px] tracking-widest text-slate-400">Personal Descriptor</h4></div>
-              <InfoItem label="Full Identification" value={student.name} />
-              <InfoItem label="Date of Genesis" value={student.dob} />
-              <InfoItem label="Comm Channel" value={student.student_phone} />
+        <div className="flex-col gap-10" style={{ gridColumn: 'span 2' }}>
+          <div className="card-white p-10 lg-grid gap-10" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+            <div className="flex-col gap-6">
+              <div className="items-center gap-3 mb-2"><User className="w-4 h-4 text-purple-400" /><h4 className="font-black uppercase text-xs tracking-widest text-slate-400">Personal</h4></div>
+              <InfoItem label="Name" value={student.name} />
+              <InfoItem label="DOB" value={student.dob} />
+              <InfoItem label="Phone" value={student.student_phone} />
             </div>
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-2"><Shield className="w-4 h-4 text-purple-400" /><h4 className="font-black uppercase text-[10px] tracking-widest text-slate-400">Credentialing</h4></div>
+            <div className="flex-col gap-6">
+              <div className="items-center gap-3 mb-2"><Shield className="w-4 h-4 text-purple-400" /><h4 className="font-black uppercase text-xs tracking-widest text-slate-400">Credentials</h4></div>
               <InfoItem label="Registry ID" value={student.registration_no} />
-              <InfoItem label="Academic Stream" value={student.class} />
-              <InfoItem label="Current Cycle" value={student.years} />
-              <InfoItem label="Terminal Email" value={student.email} />
+              <InfoItem label="Stream" value={student.class} />
+              <InfoItem label="Year" value={student.years} />
+              <InfoItem label="Email" value={student.email} />
             </div>
           </div>
 
-          <div className="bg-white rounded-[3.5rem] p-10 border border-purple-50 shadow-sm">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3"><TrendingUp className="w-5 h-5 text-purple-600" /><h3 className="text-xl font-black tracking-tighter text-slate-900">Attendance Analytics</h3></div>
+          <div className="card-white p-10">
+            <div className="between mb-8">
+              <div className="items-center gap-3"><TrendingUp className="w-5 h-5 text-purple-600" /><h3 className="text-xl font-black tracking-tighter text-slate-800">Analytics</h3></div>
             </div>
-            <div className="h-64">
+            <div style={{ height: '250px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
@@ -185,39 +191,37 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
           </div>
 
           {/* Late Entry History */}
-          <div className="bg-white rounded-[3.5rem] p-10 border border-purple-50 shadow-sm">
-            <div className="flex items-center gap-4 mb-10">
-              <div className="p-3 bg-purple-50 rounded-2xl text-purple-600 shadow-inner">
+          <div className="card-white p-10">
+            <div className="items-center gap-4 mb-10">
+              <div className="btn-icon purple">
                  <Clock className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-black tracking-tighter text-slate-900">Temporal Logs</h3>
+              <h3 className="text-xl font-black tracking-tighter text-slate-800">Temporal Logs</h3>
             </div>
 
             {lateHistory.length > 0 ? (
-              <div className="bg-purple-50/20 rounded-3xl border border-purple-100/50 overflow-hidden">
-                <table className="w-full text-left border-collapse">
+              <div className="table-container">
+                <table className="data-table">
                   <thead>
-                    <tr className="bg-purple-50/50 border-b border-purple-100">
-                      <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Node Gate</th>
-                      <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Timestamp</th>
-                      <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Authorization</th>
+                    <tr>
+                      <th>Gate</th>
+                      <th>Timestamp</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-purple-100/50">
+                  <tbody>
                     {[...lateHistory].reverse().map(log => (
-                      <tr key={log.id} className="hover:bg-white/60 transition-colors">
-                        <td className="px-8 py-5">
-                          <span className="px-3 py-1.5 bg-white text-purple-600 rounded-xl text-[8px] font-black uppercase tracking-widest border border-purple-100 shadow-sm">
+                      <tr key={log.id}>
+                        <td>
+                          <span className="badge badge-purple" style={{fontSize:'0.6rem'}}>
                             {log.gate}
                           </span>
                         </td>
-                        <td className="px-8 py-5 text-slate-600 text-[11px] font-bold">
+                        <td className="text-slate-600 text-xs font-bold">
                           {new Date(log.timestamp).toLocaleString()}
                         </td>
-                        <td className="px-8 py-5">
-                          <span className={`px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-2 w-fit ${log.status === 'confirmed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100'
-                            }`}>
-                            <div className={`w-1 h-1 rounded-full ${log.status === 'confirmed' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                        <td>
+                          <span className={`badge ${log.status === 'confirmed' ? 'badge-emerald' : 'badge-purple'}`} style={{fontSize:'0.6rem'}}>
                             {log.status}
                           </span>
                         </td>
@@ -227,8 +231,8 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
                 </table>
               </div>
             ) : (
-              <div className="p-16 text-center bg-purple-50/10 rounded-[2.5rem] border border-dashed border-purple-200">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Temporal logs currently vacant.</p>
+              <div className="p-16 text-center bg-purple-50 rounded-3xl border border-dashed border-purple-200">
+                <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Temporal logs vacant.</p>
               </div>
             )}
           </div>
@@ -237,16 +241,16 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
 
       {/* Student Self-Edit Modal */}
       {showEditModal && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-slate-950/40 backdrop-blur-2xl animate-in fade-in">
-          <div className="bg-white w-full max-w-2xl rounded-[4rem] shadow-2xl p-12 relative animate-in zoom-in-95">
-            <button onClick={() => setShowEditModal(false)} className="absolute top-10 right-10 p-4 bg-slate-50 text-slate-400 rounded-full hover:bg-purple-50 hover:text-purple-600 transition-all"><X className="w-6 h-6" /></button>
-            <h3 className="text-3xl font-black text-slate-900 tracking-tighter mb-12">Core Descriptor Update</h3>
-            <form onSubmit={handleUpdateSelf} className="space-y-10">
+        <div className="modal-overlay">
+          <div className="modal-content" style={{maxWidth: '40rem'}}>
+            <button onClick={() => setShowEditModal(false)} className="btn-icon absolute" style={{top:'2.5rem', right:'2.5rem'}}><X className="w-6 h-6" /></button>
+            <h3 className="text-3xl font-black text-slate-800 tracking-tighter mb-12">Core Update</h3>
+            <form onSubmit={handleUpdateSelf} className="flex-col gap-10">
               <LightEditInput label="Terminal Email" name="email" defaultValue={student.email} icon={<Mail className="w-4 h-4" />} />
               <LightEditInput label="Mobile Vector" name="student_phone" defaultValue={student.student_phone} icon={<Phone className="w-4 h-4" />} />
               <LightEditInput label="Geo Descriptor" name="address" defaultValue={student.address} icon={<MapPin className="w-4 h-4" />} />
-              <div className="pt-8">
-                <button type="submit" disabled={editLoading} className="w-full bg-purple-600 hover:bg-purple-500 text-white py-6 rounded-3xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-4 transition-all shadow-xl shadow-purple-900/40">
+              <div className="mt-8">
+                <button type="submit" disabled={editLoading} className="btn-premium w-full">
                   {editLoading ? <Loader2 className="animate-spin" /> : <><Save className="w-5 h-5" /> Commit Modifications</>}
                 </button>
               </div>
@@ -259,23 +263,24 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
 };
 
 const LightEditInput = ({ label, name, defaultValue, icon }: any) => (
-  <div className="space-y-3">
-    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">{label}</label>
-    <div className="relative group">
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-purple-300 group-focus-within:text-purple-600 transition-colors">{icon}</div>
+  <div className="flex-col gap-3">
+    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-2">{label}</label>
+    <div className="relative">
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-purple-300">{icon}</div>
       <input
         name={name}
         defaultValue={defaultValue}
-        className="w-full pl-16 pr-8 py-5 bg-purple-50/20 border border-purple-100 rounded-[2rem] text-sm text-slate-900 outline-none font-bold focus:ring-8 ring-purple-100/50 transition-all"
+        className="input-standard" 
+        style={{ paddingLeft: '4rem', background: 'var(--purple-50)', color: 'var(--slate-800)', border: '1px solid var(--purple-100)' }}
       />
     </div>
   </div>
 );
 
 const InfoItem = ({ label, value }: any) => (
-  <div className="group border-l-2 border-purple-50 pl-5 py-2 hover:border-purple-200 transition-all">
-    <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.2em] mb-1.5">{label}</p>
-    <p className="font-bold text-slate-900 text-sm tracking-tight">{value || 'Not Processed'}</p>
+  <div className="detail-row">
+    <p className="text-xs font-black uppercase text-slate-400 tracking-widest mb-1.5">{label}</p>
+    <p className="font-bold text-slate-800 text-sm">{value || 'Not Processed'}</p>
   </div>
 );
 
