@@ -76,9 +76,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-200 flex justify-center">
-      <div className="w-full max-w-[430px] min-h-screen bg-slate-50 flex flex-col relative shadow-2xl overflow-hidden border-x border-slate-300">
-        <header className="top-header relative z-10 rounded-t-none">
+    <div className="min-h-screen bg-purple-50 flex flex-col relative overflow-x-hidden selection:bg-purple-200">
+      <header className="top-header glass-nav z-50">
           <div className="flex items-center gap-3">
             <div className="bg-purple-600 p-2 rounded-xl shadow-md">
               <Zap className="w-5 h-5 text-white" />
@@ -101,9 +100,9 @@ const App: React.FC = () => {
                 {getRoleLabel(user.role)}
               </span>
             </div>
-            <button onClick={handleLogout} className="p-2 bg-slate-100 rounded-xl text-slate-500 hover:text-rose-500">
-              <LogOut className="w-4 h-4" />
-            </button>
+            <button onClick={handleLogout} className="p-2 bg-purple-50 rounded-xl text-purple-500 hover:text-rose-500 transition-colors">
+            <LogOut className="w-4 h-4" />
+          </button>
           </div>
         </header>
 
@@ -111,7 +110,7 @@ const App: React.FC = () => {
           {renderView()}
         </main>
 
-        <nav className="bottom-nav absolute bottom-0 left-0 right-0 w-full z-20">
+        <nav className="bottom-nav glass-nav">
           <button className="bottom-nav-item active flex-1">
             <LayoutDashboard className="w-5 h-5" />
             <span>Overview</span>
@@ -125,7 +124,6 @@ const App: React.FC = () => {
             <span>Menu</span>
           </button>
         </nav>
-      </div>
     </div>
   );
 };

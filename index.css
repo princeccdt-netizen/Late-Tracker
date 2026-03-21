@@ -264,7 +264,6 @@ body {
 
 /* Layout Components */
 .top-header {
-  background: white;
   padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
@@ -272,7 +271,13 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .bottom-nav {
@@ -280,14 +285,13 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
-  border-top: 1px solid var(--slate-200);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
   display: flex;
   justify-content: space-around;
   padding: 0.75rem 0.5rem;
   padding-bottom: env(safe-area-inset-bottom, 1rem); /* iPhone safe area */
   z-index: 50;
-  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 -4px 20px -5px rgba(0, 0, 0, 0.05);
 }
 
 .bottom-nav-item {
@@ -585,7 +589,33 @@ body {
 }
 
 .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+.shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06); }
+.shadow-lg { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); }
+.shadow-soft { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); }
 .ring-white { --tw-ring-color: #fff; box-shadow: 0 0 0 4px var(--tw-ring-color); }
 .ring-purple-50 { --tw-ring-color: var(--purple-50); box-shadow: 0 0 0 12px var(--tw-ring-color); }
+
+.list-item-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 4px 15px -5px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.02);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.list-item-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 25px -5px rgba(0,0,0,0.08);
+  border-color: var(--purple-100);
+}
+
+.list-item-card:active {
+  transform: translateY(0) scale(0.98);
+}

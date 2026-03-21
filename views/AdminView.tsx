@@ -164,81 +164,101 @@ const AdminView: React.FC<AdminViewProps> = ({ initialUser }) => {
   const canSwitchTabs = isPrincipal || isHOD;
 
   return (
-    <div className="admin-container">
-      {/* Admin Header */}
-      <div className="admin-header">
-        <div className="flex items-center gap-6">
-           <div className={`header-icon-box ${isPrincipal ? 'active' : 'standard'}`}>
-             {isPrincipal ? <Award className="w-8 h-8" /> : <ShieldCheck className="w-8 h-8" />}
-           </div>
-           <div>
-             <h2 className="text-3xl font-black text-slate-800 tracking-tight">
-               {isPrincipal ? 'Principal Command Center' : isHOD ? 'HOD Department Console' : 'Lecturer Portal'}
-             </h2>
-             <p className="text-slate-400 font-bold uppercase text-xs tracking-widest mt-1.5 flex items-center gap-2">
-               <div className="dot bg-purple-600 animate-pulse" />
-               {isPrincipal ? 'Full Institutional Authority' : isHOD ? `Department: ${initialUser.assignedValue || 'Global'}` : `Managing: ${staffProfile?.stream || 'Assigned Stream'}`}
-             </p>
-           </div>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="tab-group mr-4">
-            <button 
-              onClick={() => setActiveTab('students')} 
-              className={`tab-btn ${activeTab === 'students' ? 'active' : ''}`}
-            >
-              Students
-            </button>
-            {canSwitchTabs && (
-              <button 
-                onClick={() => setActiveTab('staff')} 
-                className={`tab-btn ${activeTab === 'staff' ? 'active' : ''}`}
-              >
-                Staff
-              </button>
-            )}
-          </div>
-          
-          <button onClick={fetchRegistry} className="btn-icon purple">
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-          
-          <button onClick={() => setShowImportModal(true)} className="btn-premium">
-            <UploadCloud className="w-5 h-5" /> Bulk Sync
+    <div className="px-4 py-6 flex flex-col gap-6">
+      {/* Top Header & Search */}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-2xl font-black text-purple-950 tracking-tight">
+          {isPrincipal ? 'Command Center' : isHOD ? 'Dept Console' : 'Portal'}
+        </h2>
+        <div className="bg-white rounded-2xl flex items-center px-4 py-2 border border-slate-200 shadow-sm">
+          <Search className="text-purple-400 w-5 h-5" />
+          <input 
+            type="text" 
+            placeholder="Search employees..." 
+            value={searchQuery} 
+            onChange={e => setSearchQuery(e.target.value)} 
+            className="w-full bg-transparent border-none outline-none p-2 font-bold text-purple-950 text-sm" 
+          />
+          <button onClick={() => setShowImportModal(true)} className="p-2 bg-slate-50 rounded-xl text-slate-500">
+            <Filter className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="search-container">
-          <Search className="text-slate-300" />
-          <input 
-            type="text" 
-            placeholder={`Search by name, ID, or department in ${activeTab}...`} 
-            value={searchQuery} 
-            onChange={e => setSearchQuery(e.target.value)} 
-            className="search-input" 
-          />
-        </div>
-        
-        <div className="bg-white rounded-3xl p-4 flex items-center border border-purple-100 gap-4 px-6 shadow-md">
-          <span className="text-xs font-black uppercase text-slate-300 tracking-widest">Sort:</span>
-          <div className="flex gap-2">
-            {activeTab === 'students' && (
-              <>
-                <SortButton label="Name" active={sortConfig.key === 'name'} onClick={() => toggleSort('name')} />
-                <SortButton label="Lates" active={sortConfig.key === 'late_count_this_month'} onClick={() => toggleSort('late_count_this_month')} />
-              </>
-            )}
-            {activeTab === 'staff' && (
-              <>
-                <SortButton label="Name" active={sortConfig.key === 'name'} onClick={() => toggleSort('name')} />
-                <SortButton label="Dept" active={sortConfig.key === 'department'} onClick={() => toggleSort('department')} />
-              </>
-            )}
+      {/* Tabs */}
+      <div className="flex gap-2">
+        <button 
+          onClick={() => setActiveTab('students')} 
+          className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm ${activeTab === 'students' ? 'bg-purple-600 text-white' : 'bg-white text-purple-400 border border-purple-100 hover:bg-purple-50'}`}
+        >
+          Students
+        </button>
+        {canSwitchTabs && (
+          <button 
+            onClick={() => setActiveTab('staff')} 
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm ${activeTab === 'staff' ? 'bg-purple-600 text-white' : 'bg-white text-purple-400 border border-purple-100 hover:bg-purple-50'}`}
+          >
+            Staff
+          </button>
+        )}
+      </div>
+
+      {/* Stats Cards (Mockup styling matching Envato) */}
+      <div className="flex flex-col gap-4">
+        {/* Work Location Card */}
+        <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-3xl p-5 text-white flex gap-4 items-center shadow-soft relative overflow-hidden">
+          <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl opacity-10" />
+          <div className="relative z-10 w-20 h-20 rounded-full border-[6px] border-purple-400 border-r-purple-300 flex items-center justify-center">
+            <span className="font-black text-xl text-white">82%</span>
+          </div>
+          <div className="relative z-10 flex flex-col gap-1">
+            <h4 className="text-purple-100 font-bold text-sm">On-Site</h4>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-white" />
+              <span className="text-xs font-bold text-purple-200">Office (68)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-purple-300" />
+              <span className="text-xs font-bold text-purple-200">Remote (14)</span>
+            </div>
           </div>
         </div>
+
+        {/* 2-Column Stats */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-purple-100 rounded-3xl p-5 flex flex-col gap-2 relative overflow-hidden group shadow-sm border border-purple-200">
+            <div className="p-3 bg-white rounded-2xl w-fit shadow-sm text-purple-600">
+              <Users className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-black text-purple-950">203</h3>
+              <p className="text-xs font-bold text-purple-600 uppercase tracking-wider">All Employees</p>
+            </div>
+          </div>
+          <div className="bg-white flex flex-col rounded-3xl p-4 gap-3 relative overflow-hidden shadow-sm border border-purple-50">
+            <div className="flex items-center gap-3">
+               <div className="p-2 bg-purple-50 rounded-xl text-purple-500"><User className="w-4 h-4"/></div>
+               <div className="flex flex-col">
+                 <span className="font-black text-lg text-purple-950">102</span>
+                 <span className="text-[0.6rem] font-bold text-purple-400 uppercase tracking-widest">Male</span>
+               </div>
+            </div>
+            <div className="flex items-center gap-3">
+               <div className="p-2 bg-purple-50 rounded-xl text-purple-400"><User className="w-4 h-4"/></div>
+               <div className="flex flex-col">
+                 <span className="font-black text-lg text-purple-950">101</span>
+                 <span className="text-[0.6rem] font-bold text-purple-400 uppercase tracking-widest">Female</span>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mt-2 px-1">
+        <h3 className="font-black text-lg text-purple-950">{activeTab === 'students' ? 'All Students' : 'All Staff'}</h3>
+        <button className="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-1">
+          Sort <ArrowUpDown className="w-3 h-3" />
+        </button>
       </div>
 
       {loading ? (
@@ -247,37 +267,37 @@ const AdminView: React.FC<AdminViewProps> = ({ initialUser }) => {
           <p className="text-xs font-black uppercase tracking-widest text-slate-300">Synchronizing Global Records</p>
         </div>
       ) : (
-        <div className="entity-grid">
+        <div className="flex flex-col gap-3">
           {filteredItems.map((item: any) => (
             <div 
               key={item.roll_no || item.id} 
               onClick={() => activeTab === 'students' ? setSelectedStudent(item) : setSelectedStaff(item)} 
-              className="entity-card group"
+              className="list-item-card"
             >
-               <div className="between items-start">
+              <div className="flex items-center gap-4">
                  {activeTab === 'students' ? (
-                   <img src={item.photo_url} className="w-16 h-16 rounded-2xl object-cover ring-4 ring-white shadow-md mb-4" alt="" />
+                   <img src={item.photo_url} className="w-12 h-12 rounded-2xl object-cover ring-2 ring-purple-50" alt="" />
                  ) : (
-                   <div className="w-16 h-16 rounded-2xl bg-purple-50 center text-purple-600 mb-4 shadow-inner border border-purple-100">
-                     <User className="w-8 h-8" />
+                   <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
+                     <User className="w-6 h-6" />
                    </div>
                  )}
-                 <div className="flex-col items-end">
-                    <Edit3 className="w-4 h-4 text-purple-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {activeTab === 'students' && (
-                      <div className={`mt-2 badge ${item.late_count_this_month > 5 ? 'bg-rose-500' : 'badge-emerald'}`} style={item.late_count_this_month > 5 ? {color:'white'} : {}}>
-                        {item.late_count_this_month} Lates
-                      </div>
-                    )}
+                 <div className="flex flex-col">
+                   <h3 className="font-black text-purple-950 text-sm max-w-[150px] truncate">{item.name}</h3>
+                   <span className="text-[0.65rem] font-bold text-purple-400 uppercase tracking-widest mt-0.5">
+                     {activeTab === 'students' ? item.department : (item.role || 'STAFF').replace('ADMIN_', '')}
+                   </span>
                  </div>
-               </div>
-               <h3 className="text-xl font-black text-slate-800 tracking-tight group-hover:text-purple-600 transition-colors truncate">{item.name}</h3>
-               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1.5">{item.roll_no || item.id}</p>
-               <div className="mt-6 pt-6 border-t border-purple-50">
-                  <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">
-                    {activeTab === 'students' ? `${item.stream || 'N/A'} • ${item.department || 'N/A'}` : (item.role || 'STAFF').replace('ADMIN_', '')}
-                  </span>
-               </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button className="p-2.5 rounded-xl bg-purple-50 text-purple-400 hover:text-purple-600 hover:bg-purple-100 transition-colors">
+                  <Mail className="w-4 h-4" />
+                </button>
+                <button className="p-2.5 rounded-xl bg-purple-50 text-purple-400 hover:text-purple-600 hover:bg-purple-100 transition-colors">
+                  <Phone className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -287,7 +307,7 @@ const AdminView: React.FC<AdminViewProps> = ({ initialUser }) => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="between mb-10">
-              <h3 className="text-3xl font-black text-slate-800 tracking-tight">{isEditMode ? 'Modify Protocol' : 'Student Identity'}</h3>
+              <h3 className="text-3xl font-black text-purple-950 tracking-tight">{isEditMode ? 'Modify Protocol' : 'Student Identity'}</h3>
               <div className="flex gap-4">
                 <button onClick={() => setIsEditMode(!isEditMode)} className="btn-icon purple">
                   {isEditMode ? <X className="w-6 h-6" /> : <Edit3 className="w-6 h-6" />}
@@ -320,7 +340,7 @@ const AdminView: React.FC<AdminViewProps> = ({ initialUser }) => {
                 <div className="flex items-center gap-10 border-b border-purple-50 pb-12">
                   <img src={selectedStudent.photo_url} className="w-40 h-40 rounded-[3.5rem] object-cover ring-[12px] ring-purple-50 shadow-2xl" alt="" />
                   <div className="flex-1">
-                    <h3 className="text-5xl font-black text-slate-800 tracking-tighter leading-none">{selectedStudent.name}</h3>
+                    <h3 className="text-5xl font-black text-purple-950 tracking-tighter leading-none">{selectedStudent.name}</h3>
                     <div className="flex gap-3 mt-6">
                       <span className="badge badge-purple" style={{background:'var(--slate-900)', color:'white'}}>{selectedStudent.roll_no}</span>
                       <span className="badge badge-purple">{selectedStudent.department} • {selectedStudent.stream}</span>
@@ -354,7 +374,7 @@ const AdminView: React.FC<AdminViewProps> = ({ initialUser }) => {
                 <div className="mt-12 pt-12 border-t border-purple-50">
                   <div className="flex items-center gap-3 mb-8">
                     <Clock className="w-5 h-5 text-purple-600" />
-                    <h4 className="text-xl font-black text-slate-800 tracking-tight">Late Entry History</h4>
+                    <h4 className="text-xl font-black text-purple-950 tracking-tight">Late Entry History</h4>
                   </div>
                   
                   {logsLoading ? (
@@ -429,7 +449,7 @@ const SortButton: React.FC<SortButtonProps> = ({ label, active, onClick }) => (
 
 const EditInput = ({ label, name, defaultValue, icon }: any) => (
   <div className="flex-col gap-2">
-    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{label}</label>
+    <label className="text-xs font-black text-purple-400 uppercase tracking-widest ml-1">{label}</label>
     <div className="relative">
       <div className="absolute left-5 top-1/2 -translate-y-1/2 text-purple-300">{icon}</div>
       <input 
