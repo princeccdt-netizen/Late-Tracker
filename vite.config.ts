@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: '/',
+    base: '/Late-Tracker/',
     server: {
       port: 4040,
       host: '0.0.0.0',
