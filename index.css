@@ -35,11 +35,11 @@
   --rose-500: #f43f5e;
 
   /* Theme Tokens */
-  --bg-main: var(--slate-950);
-  --text-main: var(--slate-50);
-  --text-muted: var(--slate-400);
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --bg-main: #f8f9fe;
+  --text-main: var(--slate-900);
+  --text-muted: var(--slate-500);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
   
   /* Radii */
   --radius-xl: 1.5rem;
@@ -263,10 +263,8 @@ body {
 .badge-emerald { background: var(--emerald-50); color: var(--emerald-500); border: 1px solid var(--emerald-100); }
 
 /* Layout Components */
-.navbar {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--purple-100);
+.top-header {
+  background: white;
   padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
@@ -274,12 +272,54 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid var(--slate-200);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem 0.5rem;
+  padding-bottom: env(safe-area-inset-bottom, 1rem); /* iPhone safe area */
+  z-index: 50;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--slate-400);
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.bottom-nav-item.active {
+  color: var(--purple-600);
+}
+
+.bottom-nav-item.active svg {
+  color: var(--purple-600);
+  fill: var(--purple-100);
 }
 
 .main-content {
   flex: 1;
-  overflow: auto;
-  background: rgba(241, 245, 249, 0.5);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 5rem; /* Space for bottom nav */
 }
 
 /* Specific Views */

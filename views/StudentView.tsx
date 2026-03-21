@@ -110,7 +110,7 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
   }
 
   return (
-    <div className="student-container">
+    <div className="px-4 py-6 flex flex-col gap-6 w-full">
       {/* Profile Header */}
       <div className="profile-header">
         <div className="relative">
@@ -137,8 +137,8 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
         </div>
       </div>
 
-      <div className="lg-grid gap-10" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-        <div className="flex-col gap-10">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6">
           <div className="card-white p-10 center flex-col">
             <div className="qr-box mb-8">
               <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${student.roll_no}`} className="w-40 h-40" alt="QR" />
@@ -150,8 +150,8 @@ const StudentView: React.FC<StudentViewProps> = ({ currentUser, onUpdateUser }) 
           </div>
         </div>
 
-        <div className="flex-col gap-10" style={{ gridColumn: 'span 2' }}>
-          <div className="card-white p-10 lg-grid gap-10" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+        <div className="flex flex-col gap-6">
+          <div className="card-white p-6 flex flex-col gap-6">
             <div className="flex-col gap-6">
               <div className="items-center gap-3 mb-2"><User className="w-4 h-4 text-purple-400" /><h4 className="font-black uppercase text-xs tracking-widest text-slate-400">Personal</h4></div>
               <InfoItem label="Name" value={student.name} />

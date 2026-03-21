@@ -76,46 +76,56 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <nav className="navbar">
-        <div className="flex items-center gap-4">
-          <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-4 hover-purple-bg md-hidden">
-            {isSidebarOpen ? <X className="w-5 h-5 text-purple-600" /> : <Menu className="w-5 h-5 text-purple-600" />}
-          </button>
-          <div className="flex items-center gap-3 group pointer">
-            <div className="bg-purple-600 p-3 rounded-2xl shadow-lg transition-transform">
-              <Zap className="w-5 h-5 text-white" fill="white" />
+    <div className="min-h-screen bg-slate-200 flex justify-center">
+      <div className="w-full max-w-[430px] min-h-screen bg-slate-50 flex flex-col relative shadow-2xl overflow-hidden border-x border-slate-300">
+        <header className="top-header relative z-10 rounded-t-none">
+          <div className="flex items-center gap-3">
+            <div className="bg-purple-600 p-2 rounded-xl shadow-md">
+              <Zap className="w-5 h-5 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-lg tracking-tighter text-slate-900">DGVC<span className="text-purple-600">Attendance</span></span>
-              <div className="mini-indicator">
-                <div className={`dot ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
-                <span className={`text-xs font-black uppercase tracking-widest ${isOnline ? 'text-emerald-600' : 'text-amber-600'}`}>
-                  {isOnline ? 'Network: Live' : 'Network: Syncing'}
+              <span className="font-black text-sm tracking-tight text-slate-900">DGVC<span className="text-purple-600">Attendance</span></span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
+                <span className={`text-[0.6rem] font-black uppercase tracking-widest ${isOnline ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {isOnline ? 'Live' : 'Sync'}
                 </span>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-6">
-          <div className="md-flex flex-col items-end pr-5 border-r hidden">
-            <span className="text-sm font-black text-slate-900">{user.name}</span>
-            <span className="text-xs text-purple-600 font-bold uppercase tracking-widest items-center gap-2 flex">
-              <Shield className="w-3 h-3" />
-              {getRoleLabel(user.role)}
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end">
+              <span className="text-xs font-black text-slate-900 truncate max-w-[80px]">{user.name.split(' ')[0]}</span>
+              <span className="text-[0.6rem] text-purple-600 font-bold uppercase tracking-widest">
+                {getRoleLabel(user.role)}
+              </span>
+            </div>
+            <button onClick={handleLogout} className="p-2 bg-slate-100 rounded-xl text-slate-500 hover:text-rose-500">
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
-          <button onClick={handleLogout} className="btn-secondary">
-            <LogOut className="w-3.5 h-3.5" />
-            <span className="sm-inline">Terminate Session</span>
-          </button>
-        </div>
-      </nav>
+        </header>
 
-      <main className="main-content">
-        {renderView()}
-      </main>
+        <main className="main-content flex-1 h-full overflow-y-auto w-full relative">
+          {renderView()}
+        </main>
+
+        <nav className="bottom-nav absolute bottom-0 left-0 right-0 w-full z-20">
+          <button className="bottom-nav-item active flex-1">
+            <LayoutDashboard className="w-5 h-5" />
+            <span>Overview</span>
+          </button>
+          <button className="bottom-nav-item flex-1">
+            <Shield className="w-5 h-5" />
+            <span>Analytics</span>
+          </button>
+          <button className="bottom-nav-item flex-1">
+            <Menu className="w-5 h-5" />
+            <span>Menu</span>
+          </button>
+        </nav>
+      </div>
     </div>
   );
 };
