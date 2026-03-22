@@ -77,34 +77,39 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-purple-50 flex flex-col relative overflow-x-hidden selection:bg-purple-200">
-      <header className="top-header glass-nav z-50">
-          <div className="flex items-center gap-3">
-            <div className="bg-purple-600 p-2 rounded-xl shadow-md">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-black text-sm tracking-tight text-slate-900">DGVC<span className="text-purple-600">Attendance</span></span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
-                <span className={`text-[0.6rem] font-black uppercase tracking-widest ${isOnline ? 'text-emerald-600' : 'text-amber-600'}`}>
-                  {isOnline ? 'Live' : 'Sync'}
-                </span>
+      <header className="top-header glass-nav z-50 flex items-center justify-between px-6" style={{ height: '5rem', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center gap-4">
+            <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+              <Menu className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-3">
+              <div className="bg-[#f43f5e] p-2.5 rounded-full shadow-lg shadow-rose-200">
+                <Zap className="w-5 h-5 text-white fill-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-black text-lg tracking-tight text-slate-900 leading-none">DGVC<span className="text-[#f43f5e]">Attendance</span></span>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
+                  <span className={`text-[0.65rem] font-black uppercase tracking-widest ${isOnline ? 'text-emerald-600' : 'text-amber-600'}`}>
+                    {isOnline ? 'Live' : 'Syncing'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col items-end">
-              <span className="text-xs font-black text-slate-900 truncate max-w-[80px]">{user.name.split(' ')[0]}</span>
-              <span className="text-[0.6rem] text-purple-600 font-bold uppercase tracking-widest">
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex flex-col items-end">
+              <span className="text-xs font-black text-slate-900">{user.name.split(' ')[0]}</span>
+              <span className="text-[0.6rem] text-[#f43f5e] font-bold uppercase tracking-widest">
                 {getRoleLabel(user.role)}
               </span>
             </div>
-            <button onClick={handleLogout} className="p-2 bg-purple-50 rounded-xl text-purple-500 hover:text-rose-500 transition-colors">
-            <LogOut className="w-4 h-4" />
-          </button>
+            <button onClick={handleLogout} className="p-2.5 text-slate-400 hover:text-rose-600 transition-colors" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+              <LogOut className="w-6 h-6" />
+            </button>
           </div>
-        </header>
+      </header>
 
         <main className="main-content flex-1 h-full overflow-y-auto w-full relative">
           {renderView()}

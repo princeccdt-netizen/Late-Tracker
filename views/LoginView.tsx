@@ -1,6 +1,5 @@
-
-import React, { useState, useRef } from 'react';
-import { ArrowRight, Lock, User as UserIcon, Hash, Loader2, AlertCircle, Zap, ShieldAlert, Key, MessageSquare, Palette, Globe, Layout as LayoutIcon, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Lock, User as UserIcon, Loader2, AlertCircle, ChevronDown, ChevronRight, Key, MessageSquare } from 'lucide-react';
 import { AppRole, User } from '../types';
 import { studentService } from '../services/studentService';
 import { staffService } from '../services/staffService';
@@ -11,6 +10,25 @@ interface LoginViewProps {
 }
 
 const ADMIN_PIN = "357159";
+
+const PremiumInput = ({ label, type = "text", value, onChange, icon, placeholder }: any) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+    <label className="login-label">{label}</label>
+    <div style={{ position: 'relative', width: '100%' }}>
+      <div className="login-icon-pink">
+        {React.cloneElement(icon, { size: 20 })}
+      </div>
+      <input
+        type={type}
+        required
+        value={value}
+        onChange={onChange}
+        className="login-input"
+        placeholder={placeholder}
+      />
+    </div>
+  </div>
+);
 
 const LoginView: React.FC<LoginViewProps> = ({ onLogin, onParentSetup }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,10 +42,6 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onParentSetup }) => {
   const [selectedRole, setSelectedRole] = useState<AppRole>(AppRole.STUDENT);
   const [showPinPrompt, setShowPinPrompt] = useState(false);
 
-  // Settings State
-  const [theme, setTheme] = useState('Classic');
-  const [language, setLanguage] = useState('EN');
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -36,6 +50,12 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onParentSetup }) => {
     // Default admin bypass
     if (loginId.toLowerCase() === 'admin' && loginPassword === 'admin') {
       onLogin({ id: 'admin', name: 'System Admin', role: AppRole.ADMIN_PRINCIPAL, assignedValue: 'Central' });
+      setIsLoading(false);
+      return;
+    }
+
+    if (loginId.toLowerCase() === 'faculty' && loginPassword === 'faculty') {
+      onLogin({ id: 'faculty1', name: 'Dr. Ramesh Kumar', role: AppRole.FACULTY, assignedValue: 'CS' });
       setIsLoading(false);
       return;
     }
@@ -68,214 +88,123 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onParentSetup }) => {
   };
 
   return (
-    <div className="login-view">
-      {/* Premium Gradient Background */}
-      <div className="login-bg" />
-      <div className="login-glow login-glow-top" />
-      <div className="login-glow login-glow-bottom" />
+    <div className="login-bg-pink" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingTop: '4rem', overflow: 'hidden' }}>
       
-      {/* Top Navbar Simulation */}
-      <div className="absolute top-0 w-full p-8 md-hidden between z-50">
-        <div className="flex items-center gap-2 text-white opacity-40">
-           <ShieldAlert className="w-4 h-4" />
-           <span className="text-xs font-bold uppercase tracking-widest">Secure Node: 0x82A</span>
-        </div>
-        <div className="flex gap-4">
-          <SettingsChip icon={<Globe />} label={language} onClick={() => setLanguage(l => l === 'EN' ? 'HI' : 'EN')} />
-          <SettingsChip icon={<Palette />} label={theme} onClick={() => setTheme(t => t === 'Classic' ? 'Modern' : 'Classic')} />
-        </div>
+      {/* Branding Head */}
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: '2.5rem', flexShrink: 0 }}>
+        <h1 className="login-title-color" style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.025em', lineHeight: 1 }}>DGVC Attendance</h1>
+        <p className="login-subtitle">College Access Management</p>
       </div>
 
-      {/* Main Content Hub */}
-      <div className="relative z-10 w-full max-w-6xl lg-grid grid-cols-1 gap-12 items-center" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      {/* Login Card */}
+      <div className="login-card-radius" style={{ width: '100%', flex: 1, padding: '3rem 2rem 2rem 2rem', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
         
-        {/* Left Side: Branding & Info */}
-        <div className="hidden lg-flex flex-col gap-8 animate-slide-up">
-          <div className="login-branding">
-            <div className="bg-purple-600 p-3 rounded-full shadow-lg">
-              <Zap className="w-6 h-6 text-white" fill="white" />
-            </div>
-            <div>
-              <h2 className="text-white font-black text-xl tracking-tight">DGVC <span className="text-purple-400">Attendance</span></h2>
-              <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Enterprise Access Suite</p>
-            </div>
-          </div>
-          
-          <div className="flex-col gap-6">
-            <h1 className="text-6xl font-black text-white tracking-tighter">
-              Digital Governance <br />
-              <span className="text-gradient-purple italic">Simplified.</span>
-            </h1>
-            <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-md">
-              Authenticate into the attendance ecosystem. Secure, smart, and efficient management for the modern institution.
-            </p>
-          </div>
-
-          <div className="flex gap-4">
-            <FeatureBox title="PWA Enabled" desc="Install on mobile directly" />
-            <FeatureBox title="Real-time Sync" desc="Instant attendance logs" />
-          </div>
-        </div>
-
-        {/* Right Side: Login Card */}
-        <div className="w-full m-auto">
-          <div className="login-card">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500 opacity-10 blur-3xl pointer-events-none" />
-            
-            {showPinPrompt ? (
-               <div className="flex-col gap-8 animate-fade text-center py-4">
-               <div className="bg-purple-600 opacity-20 w-16 h-16 rounded-2xl center m-auto border border-purple-500">
-                 <ShieldAlert className="text-purple-400 w-8 h-8" />
-               </div>
-               <div className="flex-col gap-2">
-                 <h2 className="text-2xl font-black text-white">Verification</h2>
-                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Entry Restricted to Faculty</p>
-               </div>
-               
-               <div className="flex-col gap-6">
-                 <PremiumInput label="Auth PIN" type="password" value={pinInput} onChange={(e) => setPinInput(e.target.value)} icon={<Key />} />
-                 {dbError && <p className="rose-500 text-xs font-bold uppercase tracking-widest animate-pulse">{dbError}</p>}
-                 <div className="flex gap-3">
-                   <button onClick={() => setShowPinPrompt(false)} className="btn-secondary flex-1">Cancel</button>
-                   <button onClick={verifyPin} className="btn-premium flex-1">Proceed</button>
-                 </div>
+        {showPinPrompt ? (
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', textAlign: 'center', padding: '0.5rem 0', position: 'relative', zIndex: 10 }}>
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+               <h2 className="login-title-color" style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.025em' }}>Verification</h2>
+               <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Entry Restricted to Faculty</p>
+             </div>
+             
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '1rem', textAlign: 'left' }}>
+                <PremiumInput label="Auth PIN" type="password" value={pinInput} onChange={(e) => setPinInput(e.target.value)} icon={<Key />} placeholder="••••••" />
+               {dbError && <p style={{ color: '#e11d48', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>{dbError}</p>}
+               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                 <button onClick={() => setShowPinPrompt(false)} style={{ width: '100%', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', height: '3.5rem', backgroundColor: '#f1f5f9', borderRadius: '9999px', cursor: 'pointer', border: 'none' }}>Cancel</button>
+                 <button onClick={verifyPin} className="login-btn-red">Proceed</button>
                </div>
              </div>
-            ) : isSignUp ? (
-              <div className="text-center flex-col gap-8 py-10 animate-fade">
-                <div className="flex-col gap-3">
-                  <h2 className="text-3xl font-black text-white">Enrollment Hub</h2>
-                  <p className="text-slate-400 text-sm">Please utilize the internal terminal for new account commission steps.</p>
-                </div>
-                <button onClick={() => setIsSignUp(false)} className="settings-chip m-auto">
-                  <ArrowRight className="w-3 h-3 rotate-180" /> Back to Portal
-                </button>
+           </div>
+        ) : isSignUp ? (
+           <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1.5rem 0', position: 'relative', zIndex: 10 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <h2 className="login-title-color" style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.025em' }}>Enrollment Hub</h2>
+                <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Please utilize the internal terminal for new account commission steps.</p>
               </div>
-            ) : (
-              <form onSubmit={handleLogin} className="flex-col gap-8 animate-fade">
-                <div className="lg-hidden text-center mb-8">
-                  <h1 className="text-3xl font-black text-white tracking-tighter">DGVC <span className="text-purple-400">Portal</span></h1>
+              <button onClick={() => setIsSignUp(false)} style={{ margin: '1rem auto 0 auto', padding: '0 1.5rem', height: '3.5rem', backgroundColor: '#f1f5f9', borderRadius: '9999px', color: '#475569', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', border: 'none' }}>
+                <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Back to Portal
+              </button>
+           </div>
+        ) : (
+           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', maxWidth: '400px', margin: '0 auto' }}>
+              <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                <h2 className="login-title-color" style={{ fontSize: '1.8rem', fontWeight: 900, letterSpacing: '-0.025em' }}>College Login</h2>
+              </div>
+
+              {dbError && (
+                <div style={{ padding: '1rem', backgroundColor: '#fff1f2', border: '1px solid #ffe4e6', borderRadius: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <AlertCircle size={20} color="#e11d48" style={{ flexShrink: 0 }} />
+                  <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#e11d48', textTransform: 'uppercase', letterSpacing: '0.1em', lineHeight: 1 }}>{dbError}</p>
                 </div>
+              )}
 
-                <div className="flex-col gap-2">
-                  <h2 className="text-2xl font-black text-white tracking-tight">Security Login</h2>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Authenticate your credentials</p>
-                </div>
-
-                {dbError && (
-                  <div className="p-4 bg-rose-500 opacity-10 border border-rose-500 rounded-2xl flex items-center gap-3">
-                    <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
-                    <p className="text-xs font-bold text-rose-500 uppercase tracking-widest leading-none">{dbError}</p>
-                  </div>
-                )}
-
-                <div className="flex-col gap-4">
-                  <div className="flex-col gap-2">
-                    <label className="text-xs font-black text-purple-400 uppercase tracking-widest ml-2">Access Level</label>
-                    <div className="relative">
-                      <select 
-                        value={selectedRole} 
-                        onChange={(e) => setSelectedRole(e.target.value as AppRole)} 
-                        className="input-standard appearance-none cursor-pointer pr-12"
-                      >
-                        <option value={AppRole.STUDENT}>Student Learner</option>
-                        <option value={AppRole.ADMIN_TEACHER}>Academic Faculty</option>
-                        <option value={AppRole.ADMIN_HOD}>Department Head</option>
-                        <option value={AppRole.DISCIPLINE_INCHARGE}>Discipline Logic</option>
-                        <option value={AppRole.ADMIN_PRINCIPAL}>Executive Hub</option>
-                      </select>
-                      <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400 rotate-90 pointer-events-none" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', textAlign: 'left', width: '100%' }}>
+                {/* Select */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                  <label className="login-label">Portal Path</label>
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <select 
+                      value={selectedRole} 
+                      onChange={(e) => setSelectedRole(e.target.value as AppRole)} 
+                      className="login-input"
+                    >
+                      <option value={AppRole.STUDENT}>Student Portal</option>
+                      <option value={AppRole.ADMIN_TEACHER}>Faculty Portal</option>
+                      <option value={AppRole.ADMIN_HOD}>Department Head</option>
+                      <option value={AppRole.DISCIPLINE_INCHARGE}>Discipline Incharge</option>
+                      <option value={AppRole.ADMIN_PRINCIPAL}>Administrative Access</option>
+                    </select>
+                    <div className="login-dropdown-arrow">
+                      <ChevronDown size={16} strokeWidth={3} />
+                      <ChevronRight size={16} strokeWidth={3} style={{ marginLeft: '-4px' }} />
                     </div>
                   </div>
-
-                  <PremiumInput label="Digital Identity (Roll No/E-mail)" value={loginId} onChange={(e) => setLoginId(e.target.value)} icon={<UserIcon />} />
-                  <PremiumInput label="Secret Key" type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} icon={<Lock />} />
                 </div>
 
-                <button 
-                  type="submit" 
-                  disabled={isLoading} 
-                  className="btn-login"
+                <PremiumInput label="Roll No / College Email" value={loginId} onChange={(e) => setLoginId(e.target.value)} icon={<UserIcon />} placeholder="••••••••" />
+                <PremiumInput label="Password" type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} icon={<Lock />} placeholder="••••••" />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isLoading} 
+                className="login-btn-red"
+                style={{ marginTop: '1rem' }}
+              >
+                {isLoading ? <Loader2 className="animate-spin" size={20} color="white" /> : <><span style={{ marginTop: '2px' }}>Authorize Access</span> <ArrowRight size={20} strokeWidth={2.5} /></>}
+              </button>
+
+              <div style={{ paddingTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <button
+                  type="button"
+                  onClick={onParentSetup}
+                  style={{ width: '100%', backgroundColor: 'rgba(37, 211, 102, 0.1)', color: '#075E54', height: '3rem', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.65rem', border: 'none', cursor: 'pointer' }}
                 >
-                  {isLoading ? <Loader2 className="animate-spin" /> : <>Authorize Entry <ChevronRight className="w-4 h-4" /></>}
+                  <MessageSquare size={16} /> Parent: WhatsApp Onboarding
                 </button>
-
-                <div className="pt-2 flex-col gap-4">
-                  <div className="relative center py-2">
-                    <div className="w-full border-t border-white opacity-5"></div>
-                    <span className="absolute bg-slate-900 px-4 text-slate-600 text-xs font-black uppercase tracking-widest">External Link</span>
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={onParentSetup}
-                    className="btn-whatsapp"
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0.25rem', opacity: 0.7, marginTop: '0.5rem' }}>
+                  <button 
+                    type="button" 
+                    onClick={() => { setSignUpType('STUDENT'); setIsSignUp(true); }} 
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#94a3b8', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}
                   >
-                    <MessageSquare className="w-3.5 h-3.5" fill="currentColor" /> Parent Hub: WhatsApp Secure
+                    Apply for Enrollment
                   </button>
-                  
-                  <div className="between pt-2">
-                    <button type="button" onClick={() => { setSignUpType('STUDENT'); setIsSignUp(true); }} className="text-slate-400 text-xs font-bold uppercase tracking-widest pointer hover-purple">Apply for Enrollment</button>
-                    <button type="button" onClick={() => setShowPinPrompt(true)} className="text-slate-600 text-xs font-bold uppercase tracking-widest pointer hover-white underline">Faculty Commission</button>
-                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPinPrompt(true)} 
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#94a3b8', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', textDecoration: 'underline' }}
+                  >
+                    Faculty Commission
+                  </button>
                 </div>
-              </form>
-            )}
-          </div>
-          
-          <div className="mt-8 center gap-8">
-             <div className="text-center">
-               <span className="block text-white font-black text-xs">2k+</span>
-               <span className="text-xs text-slate-600 font-bold uppercase tracking-widest">Active nodes</span>
-             </div>
-             <div className="w-px h-6 bg-white opacity-10" />
-             <div className="text-center">
-               <span className="block text-white font-black text-xs">99.9%</span>
-               <span className="text-xs text-slate-600 font-bold uppercase tracking-widest">Efficiency</span>
-             </div>
-          </div>
-        </div>
+              </div>
+           </form>
+        )}
       </div>
     </div>
   );
 };
-
-// Sub-components for professional look with Vanilla CSS
-const FeatureBox = ({ title, desc }: { title: string, desc: string }) => (
-  <div className="feature-box flex-col gap-1">
-    <h4 className="text-white font-black text-xs tracking-wide">{title}</h4>
-    <p className="text-slate-400 text-xs font-medium leading-tight">{desc}</p>
-  </div>
-);
-
-const SettingsChip = ({ icon, label, onClick }: { icon: React.ReactNode, label: string, onClick: () => void }) => (
-  <button 
-    onClick={onClick}
-    className="settings-chip"
-  >
-    <span className="text-purple-400">{icon}</span>
-    <span className="text-xs font-black uppercase tracking-widest">{label}</span>
-  </button>
-);
-
-const PremiumInput = ({ label, type = "text", value, onChange, icon }: { label: string, type?: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, icon?: React.ReactNode }) => (
-  <div className="premium-input-container">
-    <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-2">{label}</label>
-    <div className="relative">
-      <div className="input-icon">
-        {React.cloneElement(icon as React.ReactElement, { size: 18 })}
-      </div>
-      <input
-        type={type}
-        required
-        value={value}
-        onChange={onChange}
-        className="input-standard"
-        style={{ paddingLeft: '3.5rem' }}
-        placeholder="••••••••"
-      />
-    </div>
-  </div>
-);
 
 export default LoginView;

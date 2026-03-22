@@ -93,10 +93,10 @@ export const MOCK_STUDENTS: Student[] = [
 ];
 
 export const GATES = [
-  'Main Gate Security',
-  'Hostel Gate',
-  'Library Block',
-  'Admin Block'
+  'Krishna Block',
+  'Main Block',
+  'Goverdhan Block',
+  'Gangha Block'
 ];
 
 export const ROLE_CONFIG = {

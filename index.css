@@ -57,10 +57,21 @@
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: var(--bg-main);
+  background-color: var(--slate-200); /* Darker background to contrast with the app wrapper */
   color: var(--text-main);
   overflow-x: hidden;
   user-select: none;
+}
+
+#root {
+  max-width: 450px;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-shadow: 0 0 40px rgba(0,0,0,0.1);
+  position: relative;
+  transform: translateZ(0); /* Contains fixed position children like bottom-nav */
+  background-color: var(--bg-main);
+  overflow-x: hidden;
 }
 
 /* Animations */
@@ -619,3 +630,55 @@ body {
 .list-item-card:active {
   transform: translateY(0) scale(0.98);
 }
+
+/* Custom Login Styles */
+.login-bg-pink { background-color: #fff1f2; }
+.login-title-color { color: #1e293b; }
+.login-subtitle { color: #1e293b; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 0.5rem; padding: 0 0.25rem; }
+.login-card-radius { border-top-left-radius: 3.5rem; border-top-right-radius: 3.5rem; background-color: #ffffff; box-shadow: 0 -10px 40px -5px rgba(0,0,0,0.05); }
+.login-input { 
+  border: 1px solid #fce7f3; 
+  border-radius: 2rem; 
+  height: 3.5rem; 
+  padding-left: 3.2rem; 
+  padding-right: 1.5rem;
+  background-color: transparent; 
+  outline: none; 
+  color: #1e293b; 
+  font-weight: 700; 
+  font-size: 0.875rem; 
+  width: 100%; 
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.login-input:focus { border-color: #f9a8d4; }
+.login-input::placeholder { color: #fbcfe8; font-size: 1.15rem; letter-spacing: 0.1em; line-height: 1; vertical-align: middle; }
+.login-icon-pink { color: #f9a8d4; position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.login-dropdown-arrow { position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%); pointer-events: none; display: flex; align-items: center; gap: 4px; color: #1e293b; }
+.login-btn-red { 
+  background-color: #e11d48; 
+  color: white; 
+  border-radius: 2rem; 
+  height: 3.5rem; 
+  outline: none; 
+  border: none; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 0.75rem;
+  width: 100%; 
+  font-weight: 900; 
+  letter-spacing: 0.1em; 
+  text-transform: uppercase; 
+  font-size: 0.75rem;
+  box-shadow: 0 10px 20px -5px rgba(225, 29, 72, 0.3);
+  transition: all 0.2s ease;
+}
+.login-btn-red:active { transform: scale(0.96); }
+.login-label { color: #1e293b; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; margin-left: 0.25rem; }
+
+/* Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -2,7 +2,7 @@
 import {
   MessageSquare, Camera, MapPin, X, Check, RefreshCw, ShieldCheck, Scan, AlertCircle, Zap, StopCircle, PlayCircle,
   Terminal, UserCheck, Clock, Phone, User as UserIcon, Send, Loader2, Search, ArrowRight,
-  Mail, BookOpen, Calendar, Hash, Briefcase, Heart, Shield, CreditCard, Target
+  Mail, BookOpen, Calendar, Hash, Briefcase, Heart, Shield, CreditCard, Target, Upload
 } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { GATES, MOCK_STUDENTS } from '../constants';
@@ -15,14 +15,14 @@ import { staffService } from '../services/staffService';
 import jsQR from 'jsqr';
 
 const DetailSection = ({ title, icon: Icon, children }: any) => (
-  <div className="card-white p-8 mb-6">
-    <div className="items-center gap-3 mb-6">
-      <div className="btn-icon purple" style={{padding:'0.5rem'}}>
-        <Icon className="w-5 h-5" />
+  <div className="card-white p-6 mb-6" style={{ borderRadius: '2.5rem' }}>
+    <div className="items-center gap-3 mb-4">
+      <div className="btn-icon purple" style={{padding:'0.4rem'}}>
+        <Icon className="w-4 h-4" />
       </div>
-      <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">{title}</h3>
+      <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest">{title}</h3>
     </div>
-    <div className="lg-grid gap-6" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+    <div className="lg-grid gap-4" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
       {children}
     </div>
   </div>
@@ -63,6 +63,30 @@ const FacultyView: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const requestRef = useRef<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code && code.data) handleStudentLookup(code.data);
+          else alert("No QR found.");
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => { return () => stopCamera(); }, []);
 
@@ -103,7 +127,7 @@ const FacultyView: React.FC = () => {
   };
 
   const scanTick = async () => {
-    if (!videoRef.current || !canvasRef.current || !isScanning) return;
+    if (!videoRef.current || !canvasRef.current) return;
     if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -187,74 +211,42 @@ const FacultyView: React.FC = () => {
       )}
 
       {/* Control Bar */}
-      <div className="card-white p-8 between">
-        <div className="items-center gap-4">
-          <div className="btn-premium" style={{padding:'0.75rem'}}><MapPin /></div>
-          <div>
-            <h2 className="text-xl font-black text-slate-800">Command Center</h2>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{activeGate}</p>
+      <div className="p-4 between rounded-[4rem] gap-4" style={{ backgroundColor: '#fff1f2', border: '1px solid #ffe4e6' }}>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="text-[#f43f5e]"><MapPin size={18} /></div>
+          <div className="flex-col">
+            <h2 className="text-sm font-black text-slate-800 leading-none">Command Center</h2>
+            <p className="text-[0.55rem] font-bold text-slate-400 uppercase tracking-widest mt-1">{activeGate}</p>
           </div>
         </div>
-        <div className="tab-group">
+        
+        <div className="tab-group flex gap-1.5 overflow-x-auto no-scrollbar py-1" style={{ flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch', flex: 1, minWidth: 0 }}>
           {GATES.map(g => (
-            <button key={g} onClick={() => setActiveGate(g)} className={`tab-btn ${activeGate === g ? 'active' : ''}`}>{g}</button>
+            <button key={g} onClick={() => setActiveGate(g)} className={`tab-btn ${activeGate === g ? 'active' : ''}`} style={{ borderRadius: '999px', padding: '0.5rem 1rem', fontSize: '0.6rem', whiteSpace: 'nowrap', flexShrink: 0, border: 'none', cursor: 'pointer', boxShadow: activeGate === g ? '0 4px 12px -2px rgba(0,0,0,0.05)' : 'none' }}>{g}</button>
           ))}
         </div>
       </div>
 
-      <div className="lg-grid gap-12" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <div className="flex-col gap-8">
-          <div className="scanner-section" style={{aspectRatio:'1/1', border:'10px solid white', boxShadow:'var(--shadow-lg)'}}>
-            <canvas ref={canvasRef} className="hidden" />
-            {isScanning ? (
-              <div className="w-full h-full relative">
-                <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />
-                <div className="scanner-viewfinder-premium">
-                  <div className="scanner-beam"></div>
-                </div>
-              </div>
-            ) : (
-              <div className="center h-full flex-col text-white p-10 text-center gap-6">
-                <div className="btn-premium" style={{background:'white', color:'var(--purple-600)', width:'80px', height:'80px', borderRadius:'2rem'}}>
-                  {error ? <AlertCircle size={40} /> : <Scan size={40} />}
-                </div>
-                <h3 className="text-2xl font-black">{error ? "Lens Error" : "Scanner Standby"}</h3>
-                <button onClick={startCamera} className="btn-premium w-full">Resume Lens</button>
-              </div>
-            )}
-          </div>
-
-          <div className="card-white p-8">
-             <div className="items-center gap-4 mb-6">
-               <div className="btn-icon purple" style={{padding:'0.5rem'}}><Search /></div>
-               <h3 className="text-lg font-black text-slate-800">Manual Search</h3>
-             </div>
-             <div className="flex gap-2">
-               <input 
-                type="text" 
-                placeholder="REGISTRY ID" 
-                className="input-standard flex-1" 
-                style={{background:'var(--purple-50)', color:'var(--slate-800)', border:'1px solid var(--purple-100)'}}
-                value={manualRollQuery}
-                onChange={e => setManualRollQuery(e.target.value.toUpperCase())}
-               />
-               <button onClick={handleManualSearch} className="btn-premium" style={{borderRadius:'1.25rem'}}><ArrowRight /></button>
-             </div>
-          </div>
-        </div>
-
-        <div className="flex-col gap-8">
+      <div className="flex-col gap-4 w-full mt-2">
           {scannedStudent ? (
-            <div className="card-white p-10 animate-fade" style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
-               <div className="flex-col gap-10">
-                 <div className="between items-start">
-                   <div className="flex-col gap-2">
-                     <span className="badge badge-emerald">Identity Verified</span>
-                     <h3 className="text-4xl font-black text-slate-800 tracking-tighter">{scannedStudent.name}</h3>
-                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{scannedStudent.roll_no}</p>
-                   </div>
-                   <img src={scannedStudent.photo_url} className="w-24 h-24 rounded-3xl object-cover ring-white shadow-md" alt="" />
-                 </div>
+            <div className="p-8 animate-fade" style={{ borderRadius: '4rem', backgroundColor: '#fff1f2', border: '1px solid #ffe4e6', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+               <div className="flex-col gap-8">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-col gap-2">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[0.6rem] font-black text-emerald-600 uppercase tracking-widest">Identity Verified</span>
+                      </div>
+                      <h3 className="text-4xl font-black text-slate-900 tracking-tighter mt-2">{scannedStudent.name}</h3>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">{scannedStudent.roll_no}</p>
+                    </div>
+                    <div className="relative">
+                      <img src={scannedStudent.photo_url} className="w-32 h-32 rounded-full object-cover ring-8 ring-slate-50 shadow-2xl border-2 border-white" alt="" />
+                      <div className="absolute bottom-1 right-1 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                        <Check className="w-4 h-4 text-white stroke-[4]" />
+                      </div>
+                    </div>
+                  </div>
 
                  <DetailSection title="Dossier" icon={Zap}>
                     <InfoItem label="Stream" value={scannedStudent.stream} icon={Zap} />
@@ -275,37 +267,106 @@ const FacultyView: React.FC = () => {
 
                <div className="flex gap-4 mt-10">
                  <button onClick={() => setScannedStudent(null)} className="btn-secondary" style={{padding:'1.25rem'}}>Discard</button>
-                 <button onClick={handleConfirmLate} disabled={notifying} className="btn-premium flex-1">
-                   {notifying ? <Loader2 className="animate-spin" /> : <><Send size={18} /> Confirm Entry</>}
-                 </button>
+                  <button onClick={handleConfirmLate} disabled={notifying} className="flex-1 h-16 bg-[#f43f5e] hover:bg-[#e11d48] text-white rounded-2xl shadow-xl shadow-rose-500/20 flex items-center justify-center gap-3 transition-all active:scale-95" style={{ border: 'none', cursor: 'pointer', borderRadius: '1.25rem' }}>
+                    {notifying ? <Loader2 className="animate-spin w-5 h-5" /> : <><Send size={18} className="fill-white" /> <span className="text-sm font-black uppercase tracking-widest">Confirm Entry</span></>}
+                  </button>
                </div>
             </div>
           ) : (
-            <div className="card-white p-10 flex-col gap-8">
-               <div className="items-center gap-4">
-                 <div className="btn-icon purple" style={{padding:'0.5rem'}}><Zap /></div>
-                 <h3 className="text-xl font-black text-slate-800">Direct Dispatch</h3>
-               </div>
-               <div className="flex-col gap-4">
-                 <div className="flex-col gap-2">
-                   <label className="text-xs font-bold uppercase text-slate-400 tracking-widest ml-1">Terminal Phone</label>
-                   <input className="input-standard" style={{background:'var(--purple-50)', color:'var(--slate-800)', border:'1px solid var(--purple-100)'}} value={manualPhone} onChange={e => setManualPhone(e.target.value)} />
-                 </div>
-                 <div className="flex-col gap-2">
-                   <label className="text-xs font-bold uppercase text-slate-400 tracking-widest ml-1">Student Name</label>
-                   <input className="input-standard" style={{background:'var(--purple-50)', color:'var(--slate-800)', border:'1px solid var(--purple-100)'}} value={manualName} onChange={e => setManualName(e.target.value)} />
-                 </div>
-                 <div className="flex-col gap-2">
-                   <label className="text-xs font-bold uppercase text-slate-400 tracking-widest ml-1">Lateness (Mins)</label>
-                   <input type="number" className="input-standard" style={{background:'var(--purple-50)', color:'var(--slate-800)', border:'1px solid var(--purple-100)'}} value={manualMinutes} onChange={e => setManualMinutes(e.target.value)} />
-                 </div>
-               </div>
-               <button onClick={handleManualWhatsAppDispatch} className="btn-premium" style={{background:'var(--emerald-500)'}}>
-                 <MessageSquare size={18} /> Dispatch Override
-               </button>
+            <div className="p-4 rounded-[4rem] relative w-full flex flex-col gap-2" style={{ borderRadius: '4rem', backgroundColor: '#fff1f2', border: '1px solid #ffe4e6' }}>
+              <canvas ref={canvasRef} className="hidden" />
+              
+              <div className="relative overflow-hidden w-full bg-slate-50 flex flex-col items-center justify-center text-center shadow-inner" style={{ borderRadius: '2.5rem', minHeight: '200px', aspectRatio: '2/1' }}>
+                <video ref={videoRef} className={`absolute inset-0 w-full h-full object-cover ${!isScanning && !scannedStudent ? 'hidden' : ''}`} muted playsInline />
+                
+                {isScanning ? (
+                  <>
+                    {/* Professional Viewfinder Overlay */}
+                    <div className="absolute inset-0 z-20 pointer-events-none">
+                      <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" />
+                      <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 bg-black/40 backdrop-blur-xl rounded-full border border-white/10">
+                        <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]" />
+                        <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-white/90">System: Active Lens</span>
+                      </div>
+                      
+                      {/* Scanning Beam */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-rose-500 to-transparent animate-scan opacity-60" style={{ position: 'absolute', top: '0' }} />
+                      </div>
+
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-40 h-40 relative">
+                          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-white/60 rounded-tl-xl" />
+                          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-white/60 rounded-tr-xl" />
+                          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-white/60 rounded-bl-xl" />
+                          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-white/60 rounded-br-xl" />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="bg-white absolute inset-0 w-full h-full flex flex-col items-center justify-center z-10">
+                    <div className="mb-2">
+                      <Scan size={56} className="text-slate-800 mx-auto" />
+                    </div>
+                    <div className="flex flex-col gap-1 w-full relative z-10 mt-4">
+                      <h3 className="text-[1.75rem] font-black text-slate-800 tracking-tight">{error ? "Lens Error" : "Scanner Standby"}</h3>
+                      <p className="text-[0.7rem] font-black text-slate-800 uppercase tracking-widest mt-1">{error || "Awaiting Command Initialization"}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex gap-4 w-full px-2 mt-8 justify-center">
+                <button 
+                  onClick={startCamera} 
+                  disabled={isScanning}
+                  style={{ backgroundColor: 'transparent', border: 'none', color: isScanning ? '#cccccc' : '#000000', opacity: isScanning ? 0.6 : 1 }}
+                  className="px-4 h-10 flex items-center justify-center gap-2 transition-all font-bold uppercase tracking-widest text-[0.8rem] cursor-pointer"
+                >
+                  <PlayCircle className="w-5 h-5" /> START SCAN
+                </button>
+                <button 
+                  onClick={stopCamera} 
+                  disabled={!isScanning}
+                  style={{ backgroundColor: 'transparent', border: 'none', color: !isScanning ? '#cccccc' : '#000000', opacity: !isScanning ? 0.6 : 1 }}
+                  className="px-4 h-10 flex items-center justify-center gap-2 transition-all font-bold uppercase tracking-widest text-[0.8rem] cursor-pointer"
+                >
+                  <StopCircle className="w-5 h-5" /> STOP SCAN
+                </button>
+              </div>
             </div>
           )}
-        </div>
+
+          {/* Manual Entry Hub */}
+          <div className="p-6 rounded-[4rem] animate-slide-up" style={{ backgroundColor: '#fff1f2', border: '1px solid #ffe4e6' }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-purple-600"><Terminal size={18} /></div>
+              <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest">Manual Entry Hub</h3>
+            </div>
+            
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  <Hash size={16} />
+                </div>
+                <input 
+                  type="text" 
+                  value={manualRollQuery}
+                  onChange={(e) => setManualRollQuery(e.target.value.toUpperCase())}
+                  placeholder="ENTER ROLL NUMBER"
+                  className="w-full h-12 pl-11 pr-4 rounded-full bg-white/60 border border-white/80 focus:border-purple-300 outline-none text-xs font-bold tracking-widest uppercase transition-all"
+                />
+              </div>
+              <button 
+                onClick={handleManualSearch}
+                disabled={isSearchingManual || !manualRollQuery}
+                className="h-12 px-6 rounded-full bg-slate-900 text-white font-black text-[0.65rem] uppercase tracking-widest hover:bg-slate-800 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
+              >
+                {isSearchingManual ? <Loader2 className="animate-spin w-4 h-4" /> : <><Search size={14} /> Verify</>}
+              </button>
+            </div>
+          </div>
       </div>
     </div>
   );
